@@ -24,6 +24,7 @@ def battery_state(day: str, tomorrow: str) -> dict:
             "planned": [{**slot, "start": "17:00", "end": "19:00", "power_w": 2091}],
             "realtime": {"active": False, "setpoint_w": 0},
             "measured_rte_pct": 86.4,
+            "min_soc_pct": 30.0, "max_soc_pct": 90.0,
             "power_check": {"expected_w": -2500, "deviating": False, "active": False, "minutes": 0, "pushing": False},
             "plans": {
                 day: {"estimate_eur": 1.76, "cycles": 2, "slots": [{**slot, "start": "23:00", "end": "23:59", "power_w": -1000}]},
@@ -37,4 +38,6 @@ def battery_state(day: str, tomorrow: str) -> dict:
                                   "feed_in": 0.2 + h / 100} for h in range(24) for m in (0, 15, 30, 45)]},
         "price_source": {day: "ENTSO-E"},
         "strategy": "classic",
+        "schedule": {"plan_schedule": True, "push_schedule": True, "writes_today": True,
+                     "next_planning": {"day": tomorrow, "at": f"{day}T15:00:00+01:00"}, "next_push": f"{day}T23:55:00+01:00"},
     }

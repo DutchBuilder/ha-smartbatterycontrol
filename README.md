@@ -46,18 +46,21 @@ Per batterij een apparaat met:
 | Geladen vandaag / Ontladen vandaag | kWh sinds middernacht (bruikbaar in het Energie-dashboard) |
 | Planning vandaag / morgen | de geplande blokken als tekst, met de blokken en de uren laden en ontladen als attribuut |
 | Laadkosten, opbrengst ontladen en netto (vandaag en deze maand) | wat laden werkelijk kostte en ontladen opleverde, in euro |
+| Maximale ontlading tot / Maximaal laden tot | de laadgrenzen van de batterij in SmartBatteryControl (%) |
 | Alle sensoren uit de batterij | spanning, stroom, temperaturen, cellen, energietellers, status en instellingen (zoals SmartBatteryControl ze uitleest) |
 
 Per batterij ook een **agenda** (Planning) met elk laad- en ontlaadblok van vandaag en morgen: te zien in de agenda van
 Home Assistant en te gebruiken als trigger in een automatisering.
 
-En aan/uit-sensoren: bereikbaar, sturen, zelfconsumptie actief, volgt schema niet, schema gelijk aan plan.
+En aan/uit-sensoren: bereikbaar, sturen, zelfconsumptie actief, volgt schema niet, schema gelijk aan plan (gelijk aan wat er
+naar de batterij gestuurd is).
 
 De sensoren uit de batterij komen uit de cache van SmartBatteryControl (die ze zelf op de achtergrond vers houdt):
 Home Assistant kost de batterij dus geen extra verzoeken.
 
 Voor SmartBatteryControl zelf: net, zon, stroomprijs en terugleverprijs nu (met alle kwartierprijzen van vandaag en morgen
-als attribuut), laagste en hoogste prijs van vandaag, prijsbron en strategie.
+als attribuut), laagste en hoogste prijs van vandaag, prijsbron en strategie, en wanneer de volgende planning en de
+volgende push naar de batterijen is (als dat volgens schema gaat).
 
 ## Wat is SmartBatteryControl?
 

@@ -136,6 +136,18 @@
       },
       "net_month": {
         "name": "Netto deze maand"
+      },
+      "min_soc": {
+        "name": "Maximale ontlading tot"
+      },
+      "max_soc": {
+        "name": "Maximaal laden tot"
+      },
+      "next_planning": {
+        "name": "Volgende planning"
+      },
+      "next_push": {
+        "name": "Volgende push naar de batterijen"
       }
     },
     "binary_sensor": {

@@ -162,6 +162,11 @@ BATTERY_SENSORS: tuple[BatterySensor, ...] = (
     BatterySensor(key="charge_cost_month", device_class=SensorDeviceClass.MONETARY, native_unit_of_measurement=EUR,
                   state_class=SensorStateClass.TOTAL, suggested_display_precision=2, value=_money("month", "cost_eur"),
                   attrs=_money_attrs("month"), details=True, reset="month"),
+    # Laadgrenzen uit de instellingen van de batterij in SmartBatteryControl
+    BatterySensor(key="min_soc", native_unit_of_measurement=PERCENTAGE, value=lambda b, d: b.get("min_soc_pct"),
+                  icon="mdi:battery-arrow-down-outline"),
+    BatterySensor(key="max_soc", native_unit_of_measurement=PERCENTAGE, value=lambda b, d: b.get("max_soc_pct"),
+                  icon="mdi:battery-arrow-up-outline"),
     BatterySensor(key="discharge_value_month", device_class=SensorDeviceClass.MONETARY, native_unit_of_measurement=EUR,
                   state_class=SensorStateClass.TOTAL, suggested_display_precision=2, value=_money("month", "value_eur"),
                   attrs=_money_attrs("month"), details=True, reset="month"),
@@ -265,7 +270,20 @@ HUB_SENSORS: tuple[HubSensor, ...] = (
     HubSensor(key="price_source", entity_category=EntityCategory.DIAGNOSTIC,
               value=lambda s: (s.get("price_source") or {}).get(dt_util.now().date().isoformat())),
     HubSensor(key="strategy", entity_category=EntityCategory.DIAGNOSTIC, value=lambda s: s.get("strategy")),
+    # Planning en pushen volgens schema (leeg als dat automatisch gaat)
+    HubSensor(key="next_planning", device_class=SensorDeviceClass.TIMESTAMP,
+              value=lambda s: _timestamp(((s.get("schedule") or {}).get("next_planning") or {}).get("at")),
+              attrs=lambda s: {"day": ((s.get("schedule") or {}).get("next_planning") or {}).get("day"),
+                               "schedule": (s.get("schedule") or {}).get("plan_schedule")}),
+    HubSensor(key="next_push", device_class=SensorDeviceClass.TIMESTAMP,
+              value=lambda s: _timestamp((s.get("schedule") or {}).get("next_push")),
+              attrs=lambda s: {"schedule": (s.get("schedule") or {}).get("push_schedule"),
+                               "writes_today": (s.get("schedule") or {}).get("writes_today")}),
 )
+
+
+def _timestamp(value):
+    return datetime.fromisoformat(value) if value else None
 
 
 class HubSensorEntity(SbcHubEntity, SensorEntity):

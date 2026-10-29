@@ -111,6 +111,11 @@ async def test_sensors(hass: HomeAssistant, state) -> None:
     assert hass.states.get("binary_sensor.venus_thuis_reachable").state == "on"
     assert hass.states.get("binary_sensor.venus_thuis_schedule_matches_plan").state == "on"
     assert hass.states.get("binary_sensor.venus_thuis_not_following_schedule").state == "off"
+    # Laadgrenzen van de batterij en het schema voor planning en pushen
+    assert hass.states.get("sensor.venus_thuis_discharge_limit").state == "30.0"
+    assert hass.states.get("sensor.venus_thuis_charge_limit").state == "90.0"
+    assert hass.states.get("sensor.smartbatterycontrol_next_push_to_the_batteries").state == "2026-10-29T22:55:00+00:00"
+    assert hass.states.get("sensor.smartbatterycontrol_next_planning").attributes["day"] == "2026-10-30"
 
     # De planning als tekst, met de uren erbij
     schedule = hass.states.get("sensor.venus_thuis_schedule_today")

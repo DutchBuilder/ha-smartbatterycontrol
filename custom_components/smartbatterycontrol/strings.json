@@ -136,6 +136,18 @@
       },
       "net_month": {
         "name": "Net result this month"
+      },
+      "min_soc": {
+        "name": "Discharge limit"
+      },
+      "max_soc": {
+        "name": "Charge limit"
+      },
+      "next_planning": {
+        "name": "Next planning"
+      },
+      "next_push": {
+        "name": "Next push to the batteries"
       }
     },
     "binary_sensor": {

@@ -31,7 +31,9 @@ BINARY_SENSORS: tuple[BatteryBinary, ...] = (
     BatteryBinary(key="deviating", device_class=BinarySensorDeviceClass.PROBLEM,
                   value=lambda b: (b.get("power_check") or {}).get("active")),
     BatteryBinary(key="schedule_in_sync", entity_category=EntityCategory.DIAGNOSTIC,
-                  value=lambda b: b.get("slots") == b.get("planned") if b.get("control") and b.get("slots") is not None else None),
+                  # Gelijk aan wat er naar de batterij gestuurd is (bij pushen volgens schema kan het plan al verder zijn)
+                  value=lambda b: (b["in_sync"] if "in_sync" in b else b.get("slots") == b.get("planned"))
+                  if b.get("control") and b.get("slots") is not None else None),
 )
 
 
