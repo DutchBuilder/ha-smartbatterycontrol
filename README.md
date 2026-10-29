@@ -23,6 +23,12 @@ dan blijft het huidige. De nieuwe gegevens worden eerst gecontroleerd, daarna la
 Verwijder je de integratie en voeg je hem opnieuw toe, dan komen alle apparaten en sensoren terug. Voeg je een
 SmartBatteryControl toe die al gekoppeld is (bijvoorbeeld met een nieuw token), dan wordt die koppeling bijgewerkt.
 
+### Updates
+
+Elke nieuwe versie verschijnt als release; HACS zet hem dan bij **Instellingen → Updates**. HACS kijkt een paar keer
+per dag; wil je meteen kijken, kies dan in HACS bij SmartBatteryControl **⋮ → Informatie bijwerken**. Herstart Home
+Assistant na het bijwerken.
+
 ## Wat je krijgt
 
 Per batterij een apparaat met:

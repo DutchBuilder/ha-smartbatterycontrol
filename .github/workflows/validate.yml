@@ -29,3 +29,28 @@ jobs:
           python-version: "3.13"
       - run: pip install pytest-homeassistant-custom-component
       - run: pytest -q
+
+  release:
+    # Een nieuwe versie in manifest.json en alles groen: een GitHub-release, zodat HACS hem bij de updates zet
+    needs: [hassfest, hacs, tests]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Release maken als deze versie er nog geen heeft
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(python3 -c "import json; print(json.load(open('custom_components/smartbatterycontrol/manifest.json'))['version'])")
+          tag="v$version"
+          if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+            echo "$tag bestaat al, geen nieuwe release"
+            exit 0
+          fi
+          previous=$(git describe --tags --abbrev=0 --match 'v*' 2>/dev/null || true)
+          git log --format='### %s%n%n%b' "${previous:+$previous..}HEAD" > notes.md
+          gh release create "$tag" --target "$GITHUB_SHA" --title "$tag" --notes-file notes.md
