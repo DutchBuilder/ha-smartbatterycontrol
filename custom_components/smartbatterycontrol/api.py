@@ -57,6 +57,10 @@ class SbcClient:
         """Plan tegen werkelijkheid van één dag (vandaag: tot nu): wat laden kostte en ontladen opleverde."""
         return await self._get(f"/plan/{battery_id}/review", {"day": day.isoformat()})
 
+    async def plug_usage(self, since: float) -> dict:
+        """Verbruik en kosten per stekker vanaf `since` (Unix-tijd): totaal, per dag en de gemiddelde kWh-prijs."""
+        return await self._get("/plugs/usage", {"since": f"{since:.0f}"})
+
     async def reviews(self, battery_id: str, days: int = 31) -> dict:
         """De bewaarde controles van de afgelopen dagen (tot en met gisteren)."""
         return await self._get(f"/plan/{battery_id}/reviews", {"days": str(days)})

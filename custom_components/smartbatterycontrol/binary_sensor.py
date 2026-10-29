@@ -30,6 +30,14 @@ BINARY_SENSORS: tuple[BatteryBinary, ...] = (
                   value=lambda b: (b.get("realtime") or {}).get("active")),
     BatteryBinary(key="deviating", device_class=BinarySensorDeviceClass.PROBLEM,
                   value=lambda b: (b.get("power_check") or {}).get("active")),
+    # Een blok is gestopt omdat de batterij zijn laad- of ontlaadgrens bereikte
+    BatteryBinary(key="limit_reached", value=lambda b: bool(b.get("limit_stops")) if "limit_stops" in b else None,
+                  attrs=lambda b: {"stops": [f"{s['start']}–{s['end']} {'ontlaadgrens' if s['reason'] == 'min' else 'laadgrens'}"
+                                             for s in b.get("limit_stops") or []],
+                                   "min_soc_pct": b.get("min_soc_pct"), "max_soc_pct": b.get("max_soc_pct")}),
+    # Pushen volgens schema: het plan is veranderd en gaat mee bij de volgende push
+    BatteryBinary(key="push_pending", entity_category=EntityCategory.DIAGNOSTIC,
+                  value=lambda b: b.get("push_pending") if "push_pending" in b else None),
     BatteryBinary(key="schedule_in_sync", entity_category=EntityCategory.DIAGNOSTIC,
                   # Gelijk aan wat er naar de batterij gestuurd is (bij pushen volgens schema kan het plan al verder zijn)
                   value=lambda b: (b["in_sync"] if "in_sync" in b else b.get("slots") == b.get("planned"))

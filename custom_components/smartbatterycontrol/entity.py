@@ -48,9 +48,18 @@ class SbcBatteryEntity(CoordinatorEntity[StateCoordinator]):
         return super().available and bool(self.battery)
 
 
-def slot_text(slot: dict) -> str:
+def slot_text(slot: dict, soc: dict | None = None) -> str:
     kind = "laden" if slot["power_w"] < 0 else "ontladen"
-    return f"{slot['start']}–{slot['end']} {kind} {abs(slot['power_w'])} W"
+    return f"{slot['start']}–{slot['end']} {kind} {abs(slot['power_w'])} W" + (f" ({soc_text(soc)})" if soc else "")
+
+
+def soc_for(battery: dict, day: str, slot: dict) -> dict | None:
+    """Wat een blok met het laadniveau doet ({soc_start_pct, soc_end_pct}), volgens SmartBatteryControl."""
+    return next((s for s in (((battery.get("plans") or {}).get(day) or {}).get("soc") or []) if s["start"] == slot["start"]), None)
+
+
+def soc_text(step: dict | None) -> str:
+    return f"{step['soc_start_pct']}% → {step['soc_end_pct']}%" if step else ""
 
 
 def plan_blocks(battery: dict) -> list[tuple[datetime, datetime, dict]]:
@@ -67,7 +76,7 @@ def plan_blocks(battery: dict) -> list[tuple[datetime, datetime, dict]]:
             if slot["end"] == "23:59":
                 end = datetime.combine(d + timedelta(days=1), time(0), tzinfo=tz)
             if end > start:
-                out.append((start, end, slot))
+                out.append((start, end, {**slot, "soc": soc_for(battery, day, slot)}))
     return sorted(out, key=lambda x: x[0])
 
 
@@ -76,7 +85,7 @@ def schedule_text(battery: dict, day: str) -> str | None:
     plan = (battery.get("plans") or {}).get(day)
     if plan is None:
         return None
-    parts = [slot_text(s) for s in plan.get("slots", []) if s.get("enabled") and s.get("power_w")]
+    parts = [slot_text(s, soc_for(battery, day, s)) for s in plan.get("slots", []) if s.get("enabled") and s.get("power_w")]
     text = ", ".join(parts) or "geen blokken"
     return text if len(text) <= 255 else text[:252] + "…"
 

@@ -148,6 +148,39 @@
       },
       "next_push": {
         "name": "Volgende push naar de batterijen"
+      },
+      "capacity": {
+        "name": "Capaciteit"
+      },
+      "max_charge_power": {
+        "name": "Maximaal laadvermogen"
+      },
+      "max_discharge_power": {
+        "name": "Maximaal ontlaadvermogen"
+      },
+      "next_control": {
+        "name": "Volgende controle"
+      },
+      "check_interval": {
+        "name": "Controle-interval"
+      },
+      "plug_power": {
+        "name": "Vermogen"
+      },
+      "plug_energy_today": {
+        "name": "Verbruik vandaag"
+      },
+      "plug_cost_today": {
+        "name": "Kosten vandaag"
+      },
+      "plug_energy_month": {
+        "name": "Verbruik deze maand"
+      },
+      "plug_cost_month": {
+        "name": "Kosten deze maand"
+      },
+      "plug_price_month": {
+        "name": "Gemiddelde prijs deze maand"
       }
     },
     "binary_sensor": {
@@ -165,6 +198,12 @@
       },
       "schedule_in_sync": {
         "name": "Schema gelijk aan plan"
+      },
+      "limit_reached": {
+        "name": "Laadgrens bereikt"
+      },
+      "push_pending": {
+        "name": "Nieuw plan wacht op push"
       }
     },
     "calendar": {

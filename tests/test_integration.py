@@ -57,6 +57,10 @@ def fake_client(state: dict, auth_error: bool = False):
             return {"actual": {"charge_kwh": 5.2, "discharge_kwh": 1.0, "cost_eur": 0.46, "value_eur": 0.31, "wear_eur": 0.03,
                                "margin_eur": -0.15}}
 
+        async def plug_usage(self, since):
+            return {"plugs": [{"id": "3c39e7aabbcc", "name": "Wasmachine", "kwh": 18.4, "cost_eur": 4.52, "avg_eur_per_kwh": 0.2457,
+                               "days": {"2026-10-28": {"kwh": 1.1, "cost_eur": 0.27, "avg_eur_per_kwh": 0.2455}}}]}
+
         async def reviews(self, battery_id, days=31):
             # Eerder deze maand, en één van vorige maand (die telt niet mee)
             month = NOW.strftime("%Y-%m")
@@ -102,7 +106,7 @@ async def test_sensors(hass: HomeAssistant, state) -> None:
     assert hass.states.get("sensor.venus_thuis_power").state == "-1200"
     assert hass.states.get("sensor.venus_thuis_round_trip_efficiency_30_days").state == "86.4"
     plan = hass.states.get("sensor.venus_thuis_plan_today_planner_estimate")
-    assert plan.state == "1.76" and plan.attributes["slots"] == ["23:00–23:59 laden 1000 W"]
+    assert plan.state == "1.76" and plan.attributes["slots"] == ["23:00–23:59 laden 1000 W (30% → 48%)"]
     assert hass.states.get("sensor.venus_thuis_plan_today_calculated").state == "0.76"
     assert hass.states.get("sensor.venus_thuis_charged_today").state == "5.3"
     assert hass.states.get("sensor.smartbatterycontrol_grid_power").state == "430"
@@ -111,6 +115,24 @@ async def test_sensors(hass: HomeAssistant, state) -> None:
     assert hass.states.get("binary_sensor.venus_thuis_reachable").state == "on"
     assert hass.states.get("binary_sensor.venus_thuis_schedule_matches_plan").state == "on"
     assert hass.states.get("binary_sensor.venus_thuis_not_following_schedule").state == "off"
+    # Vermogens, capaciteit, laadgrens bereikt, en de afweging één of twee cycli
+    assert hass.states.get("sensor.venus_thuis_maximum_discharge_power").state == "2000"
+    assert hass.states.get("sensor.venus_thuis_capacity").state == "5.12"
+    limit = hass.states.get("binary_sensor.venus_thuis_charge_limit_reached")
+    assert limit.state == "on" and limit.attributes["stops"] == ["17:00–19:00 ontlaadgrens"]
+    assert hass.states.get("binary_sensor.venus_thuis_new_plan_waiting_for_push").state == "off"
+    assert hass.states.get("sensor.venus_thuis_plan_today_planner_estimate").attributes["considered"]["chosen"] == 2
+    # Controleschema en controle-interval
+    control = hass.states.get("sensor.smartbatterycontrol_next_check")
+    assert control.state == "2026-10-29T22:50:00+00:00" and control.attributes["times"]["maandag"] == "23:50"
+    assert hass.states.get("sensor.smartbatterycontrol_check_interval").state == "60"
+    # Stekkers: een eigen apparaat met vermogen, verbruik en kosten (vandaag en deze maand, met de gemiddelde prijs)
+    assert hass.states.get("sensor.wasmachine_power").state == "512.4"
+    assert hass.states.get("sensor.wasmachine_cost_today").state == "0.31"
+    assert hass.states.get("sensor.wasmachine_energy_this_month").state == "18.4"
+    month = hass.states.get("sensor.wasmachine_cost_this_month")
+    assert month.state == "4.52" and month.attributes["days"]["2026-10-28"]["cost_eur"] == 0.27
+    assert float(hass.states.get("sensor.wasmachine_average_price_this_month").state) == pytest.approx(0.2457)
     # Laadgrenzen van de batterij en het schema voor planning en pushen
     assert hass.states.get("sensor.venus_thuis_discharge_limit").state == "30.0"
     assert hass.states.get("sensor.venus_thuis_charge_limit").state == "90.0"
@@ -119,7 +141,8 @@ async def test_sensors(hass: HomeAssistant, state) -> None:
 
     # De planning als tekst, met de uren erbij
     schedule = hass.states.get("sensor.venus_thuis_schedule_today")
-    assert schedule.state == "23:00–23:59 laden 1000 W" and schedule.attributes["hours_charging"] == 1.0
+    assert schedule.state == "23:00–23:59 laden 1000 W (30% → 48%)" and schedule.attributes["hours_charging"] == 1.0
+    assert schedule.attributes["blocks"][0]["soc_end_pct"] == 48  # wat het blok met het laadniveau doet
     assert hass.states.get("sensor.venus_thuis_schedule_tomorrow").attributes["hours_charging"] == 4.0
     # Wat laden kostte en ontladen opleverde: vandaag, en deze maand (de bewaarde dagen van deze maand plus vandaag)
     assert float(hass.states.get("sensor.venus_thuis_charging_cost_today").state) == pytest.approx(0.46)

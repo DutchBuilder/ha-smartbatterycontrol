@@ -20,8 +20,8 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
-from .coordinator import SbcConfigEntry, SensorCoordinator
-from .entity import SbcBatteryEntity, SbcHubEntity, next_block, schedule_text, slot_text
+from .coordinator import SbcConfigEntry, SensorCoordinator, StateCoordinator
+from .entity import SbcBatteryEntity, SbcHubEntity, next_block, schedule_text, slot_text, soc_for
 
 EUR, EUR_KWH = "EUR", "EUR/kWh"
 
@@ -48,7 +48,9 @@ def _plan(day_offset: int):
         day = (dt_util.now().date() + timedelta(days=day_offset)).isoformat()
         plan = (b.get("plans") or {}).get(day) or {}
         return {"date": day, "cycles": plan.get("cycles"),
-                "slots": [slot_text(s) for s in plan.get("slots", []) if s.get("enabled")]}
+                "slots": [slot_text(s, soc_for(b, day, s)) for s in plan.get("slots", []) if s.get("enabled")],
+                # slim: één of twee cycli doorgerekend; controleschema: wat er gecorrigeerd is
+                "considered": plan.get("considered"), "corrections": plan.get("corrections") or []}
     return value, attrs
 
 
@@ -83,7 +85,8 @@ def _schedule(day_offset: int):
     def attrs(b, d):
         day = (dt_util.now().date() + timedelta(days=day_offset)).isoformat()
         plan = (b.get("plans") or {}).get(day) or {}
-        blocks = [{"start": x["start"], "end": x["end"], "kind": "laden" if x["power_w"] < 0 else "ontladen", "power_w": abs(x["power_w"])}
+        blocks = [{"start": x["start"], "end": x["end"], "kind": "laden" if x["power_w"] < 0 else "ontladen", "power_w": abs(x["power_w"]),
+                   **({"soc_start_pct": soc["soc_start_pct"], "soc_end_pct": soc["soc_end_pct"]} if (soc := soc_for(b, day, x)) else {})}
                   for x in plan.get("slots", []) if x.get("enabled") and x.get("power_w")]
         return {"date": day, "blocks": blocks, "hours_charging": _hours(blocks, "laden"), "hours_discharging": _hours(blocks, "ontladen")}
     return value, attrs
@@ -109,7 +112,9 @@ def _next_attrs(b, d):
     if not found:
         return {}
     start, slot = found
-    return {"end": slot["end"], "power_w": slot["power_w"], "kind": "laden" if slot["power_w"] < 0 else "ontladen"}
+    soc = soc_for(b, start.date().isoformat(), slot)
+    return {"end": slot["end"], "power_w": slot["power_w"], "kind": "laden" if slot["power_w"] < 0 else "ontladen",
+            **({"soc_start_pct": soc["soc_start_pct"], "soc_end_pct": soc["soc_end_pct"]} if soc else {})}
 
 
 today_value, today_attrs = _plan(0)
@@ -162,6 +167,13 @@ BATTERY_SENSORS: tuple[BatterySensor, ...] = (
     BatterySensor(key="charge_cost_month", device_class=SensorDeviceClass.MONETARY, native_unit_of_measurement=EUR,
                   state_class=SensorStateClass.TOTAL, suggested_display_precision=2, value=_money("month", "cost_eur"),
                   attrs=_money_attrs("month"), details=True, reset="month"),
+    # Vermogens en capaciteit uit de instellingen van de batterij in SmartBatteryControl
+    BatterySensor(key="capacity", device_class=SensorDeviceClass.ENERGY_STORAGE, native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
+                  entity_category=EntityCategory.DIAGNOSTIC, value=lambda b, d: b.get("capacity_kwh")),
+    BatterySensor(key="max_charge_power", device_class=SensorDeviceClass.POWER, native_unit_of_measurement=UnitOfPower.WATT,
+                  entity_category=EntityCategory.DIAGNOSTIC, value=lambda b, d: b.get("max_charge_w")),
+    BatterySensor(key="max_discharge_power", device_class=SensorDeviceClass.POWER, native_unit_of_measurement=UnitOfPower.WATT,
+                  entity_category=EntityCategory.DIAGNOSTIC, value=lambda b, d: b.get("max_discharge_w")),
     # Laadgrenzen uit de instellingen van de batterij in SmartBatteryControl
     BatterySensor(key="min_soc", native_unit_of_measurement=PERCENTAGE, value=lambda b, d: b.get("min_soc_pct"),
                   icon="mdi:battery-arrow-down-outline"),
@@ -274,12 +286,27 @@ HUB_SENSORS: tuple[HubSensor, ...] = (
     HubSensor(key="next_planning", device_class=SensorDeviceClass.TIMESTAMP,
               value=lambda s: _timestamp(((s.get("schedule") or {}).get("next_planning") or {}).get("at")),
               attrs=lambda s: {"day": ((s.get("schedule") or {}).get("next_planning") or {}).get("day"),
-                               "schedule": (s.get("schedule") or {}).get("plan_schedule")}),
+                               "schedule": (s.get("schedule") or {}).get("plan_schedule"),
+                               "times": _week((s.get("schedule") or {}).get("plan_times"))}),
+    HubSensor(key="next_control", device_class=SensorDeviceClass.TIMESTAMP,
+              value=lambda s: _timestamp((s.get("schedule") or {}).get("next_control")),
+              attrs=lambda s: {"schedule": (s.get("schedule") or {}).get("control_schedule"),
+                               "times": _week((s.get("schedule") or {}).get("control_times"))}),
     HubSensor(key="next_push", device_class=SensorDeviceClass.TIMESTAMP,
               value=lambda s: _timestamp((s.get("schedule") or {}).get("next_push")),
               attrs=lambda s: {"schedule": (s.get("schedule") or {}).get("push_schedule"),
-                               "writes_today": (s.get("schedule") or {}).get("writes_today")}),
+                               "writes_today": (s.get("schedule") or {}).get("writes_today"),
+                               "times": _week((s.get("schedule") or {}).get("push_times"))}),
+    HubSensor(key="check_interval", device_class=SensorDeviceClass.DURATION, native_unit_of_measurement="s",
+              entity_category=EntityCategory.DIAGNOSTIC, value=lambda s: (s.get("schedule") or {}).get("check_interval_s")),
 )
+
+WEEKDAYS = ("maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag", "zondag")
+
+
+def _week(times: list | None) -> dict | None:
+    """De tijden per weekdag als {"maandag": "15:00", ...}; leeg = die dag niet."""
+    return dict(zip(WEEKDAYS, times)) if times else None
 
 
 def _timestamp(value):
@@ -383,6 +410,88 @@ class BatteryDetailSensor(CoordinatorEntity[SensorCoordinator], SensorEntity):
         return str(v)[:255]
 
 
+# ── stekkers (Tapo en HomeWizard): vermogen, verbruik en kosten ──────────────
+
+@dataclass(frozen=True, kw_only=True)
+class PlugSensor(SensorEntityDescription):
+    value: Callable[[dict, dict], Any]  # (stekker uit /api/state, verbruik deze maand) → waarde
+    reset: str | None = None  # bij state_class TOTAL: "day" of "month"
+
+
+PLUG_SENSORS: tuple[PlugSensor, ...] = (
+    PlugSensor(key="plug_power", device_class=SensorDeviceClass.POWER, native_unit_of_measurement=UnitOfPower.WATT,
+               state_class=SensorStateClass.MEASUREMENT, value=lambda p, m: p.get("power_w")),
+    PlugSensor(key="plug_energy_today", device_class=SensorDeviceClass.ENERGY, native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
+               state_class=SensorStateClass.TOTAL_INCREASING, suggested_display_precision=2, value=lambda p, m: p.get("today_kwh")),
+    PlugSensor(key="plug_cost_today", device_class=SensorDeviceClass.MONETARY, native_unit_of_measurement=EUR,
+               state_class=SensorStateClass.TOTAL, suggested_display_precision=2, reset="day",
+               value=lambda p, m: p.get("today_cost_eur")),
+    PlugSensor(key="plug_energy_month", device_class=SensorDeviceClass.ENERGY, native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
+               state_class=SensorStateClass.TOTAL_INCREASING, suggested_display_precision=2, value=lambda p, m: m.get("kwh")),
+    PlugSensor(key="plug_cost_month", device_class=SensorDeviceClass.MONETARY, native_unit_of_measurement=EUR,
+               state_class=SensorStateClass.TOTAL, suggested_display_precision=2, reset="month",
+               value=lambda p, m: m.get("cost_eur")),
+    PlugSensor(key="plug_price_month", native_unit_of_measurement=EUR_KWH, state_class=SensorStateClass.MEASUREMENT,
+               suggested_display_precision=4, value=lambda p, m: m.get("avg_eur_per_kwh")),
+)
+
+
+class PlugSensorEntity(CoordinatorEntity[StateCoordinator], SensorEntity):
+    """Eén waarde van een stekker; elke stekker is een eigen apparaat onder SmartBatteryControl."""
+
+    _attr_has_entity_name = True
+    entity_description: PlugSensor
+
+    def __init__(self, entry: SbcConfigEntry, plug: dict, description: PlugSensor) -> None:
+        super().__init__(entry.runtime_data.state)
+        self.entry = entry
+        self.plug_id = plug["id"]
+        self.entity_description = description
+        self._attr_unique_id = f"plug_{plug['id']}_{description.key}"
+        self._attr_translation_key = description.key
+        homewizard = plug.get("kind") == "homewizard"
+        self._attr_device_info = DeviceInfo(identifiers={(DOMAIN, f"plug_{plug['id']}")}, name=plug.get("name") or plug["id"],
+                                            manufacturer="HomeWizard" if homewizard else "TP-Link",
+                                            model=plug.get("model") or ("HomeWizard" if homewizard else "Tapo"),
+                                            via_device=(DOMAIN, entry.entry_id))
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        self.async_on_remove(self.entry.runtime_data.details.async_add_listener(self._handle_coordinator_update))
+
+    def _plug(self) -> dict:
+        return next((p for p in (self.coordinator.data or {}).get("plugs", []) if p["id"] == self.plug_id), {})
+
+    def _month(self) -> dict:
+        details = self.entry.runtime_data.details.data
+        return (details.plugs.get(self.plug_id) if details else None) or {}
+
+    @property
+    def available(self) -> bool:
+        return super().available and bool(self._plug())
+
+    @property
+    def native_value(self):
+        return self.entity_description.value(self._plug(), self._month())
+
+    @property
+    def extra_state_attributes(self) -> dict | None:
+        if self.entity_description.key == "plug_cost_month":
+            month = self._month()
+            return {"days": month.get("days"), "kwh": month.get("kwh"), "avg_eur_per_kwh": month.get("avg_eur_per_kwh")}
+        if self.entity_description.key == "plug_power":
+            plug = self._plug()
+            return {"on": plug.get("on"), "error": plug.get("error"), "host": plug.get("host")}
+        return None
+
+    @property
+    def last_reset(self) -> datetime | None:
+        if self.entity_description.state_class != SensorStateClass.TOTAL:
+            return None
+        midnight = dt_util.start_of_local_day()
+        return midnight.replace(day=1) if self.entity_description.reset == "month" else midnight
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: SbcConfigEntry, async_add_entities: AddConfigEntryEntitiesCallback) -> None:
     state = entry.runtime_data.state
     async_add_entities(HubSensorEntity(entry, d) for d in HUB_SENSORS)
@@ -396,6 +505,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: SbcConfigEntry, async_ad
 
     add_batteries()
     entry.async_on_unload(state.async_add_listener(add_batteries))  # een nieuwe batterij krijgt vanzelf sensoren
+
+    known_plugs: set[str] = set()
+
+    @callback
+    def add_plugs() -> None:
+        new = [p for p in (state.data or {}).get("plugs", []) if p["id"] not in known_plugs]
+        known_plugs.update(p["id"] for p in new)
+        async_add_entities(PlugSensorEntity(entry, p, d) for p in new for d in PLUG_SENSORS)
+
+    add_plugs()
+    entry.async_on_unload(state.async_add_listener(add_plugs))  # een nieuwe stekker krijgt vanzelf sensoren
 
     sensors = entry.runtime_data.sensors
     known_details: set[str] = set()

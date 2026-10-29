@@ -44,23 +44,28 @@ Per batterij een apparaat met:
 | Plan vandaag / morgen (schatting planner) | verwachte opbrengst volgens de planner, met de blokken als attribuut |
 | Plan vandaag / morgen (doorgerekend) | de volledige doorrekening: laden, ontladen, verliezen, slijtage en restwaarde |
 | Geladen vandaag / Ontladen vandaag | kWh sinds middernacht (bruikbaar in het Energie-dashboard) |
-| Planning vandaag / morgen | de geplande blokken als tekst, met de blokken en de uren laden en ontladen als attribuut |
+| Planning vandaag / morgen | de geplande blokken als tekst met wat elk blok met het laadniveau doet (bijv. 12% → 100%), en de uren laden en ontladen als attribuut |
 | Laadkosten, opbrengst ontladen en netto (vandaag en deze maand) | wat laden werkelijk kostte en ontladen opleverde, in euro |
 | Maximale ontlading tot / Maximaal laden tot | de laadgrenzen van de batterij in SmartBatteryControl (%) |
+| Capaciteit, maximaal laad- en ontlaadvermogen | de instellingen van de batterij |
 | Alle sensoren uit de batterij | spanning, stroom, temperaturen, cellen, energietellers, status en instellingen (zoals SmartBatteryControl ze uitleest) |
 
 Per batterij ook een **agenda** (Planning) met elk laad- en ontlaadblok van vandaag en morgen: te zien in de agenda van
 Home Assistant en te gebruiken als trigger in een automatisering.
 
 En aan/uit-sensoren: bereikbaar, sturen, zelfconsumptie actief, volgt schema niet, schema gelijk aan plan (gelijk aan wat er
-naar de batterij gestuurd is).
+naar de batterij gestuurd is), laadgrens bereikt en nieuw plan wacht op push.
+
+Per stekker (Tapo of HomeWizard) een apparaat met het vermogen, het verbruik en de kosten van vandaag en deze maand, en de
+gemiddelde prijs per kWh deze maand (met de kosten per dag als attribuut).
 
 De sensoren uit de batterij komen uit de cache van SmartBatteryControl (die ze zelf op de achtergrond vers houdt):
 Home Assistant kost de batterij dus geen extra verzoeken.
 
 Voor SmartBatteryControl zelf: net, zon, stroomprijs en terugleverprijs nu (met alle kwartierprijzen van vandaag en morgen
 als attribuut), laagste en hoogste prijs van vandaag, prijsbron en strategie, en wanneer de volgende planning en de
-volgende push naar de batterijen is (als dat volgens schema gaat).
+volgende push naar de batterijen en de volgende controle is (als dat volgens schema gaat, met de tijden per weekdag als
+attribuut), en het controle-interval.
 
 ## Wat is SmartBatteryControl?
 

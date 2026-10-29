@@ -148,6 +148,39 @@
       },
       "next_push": {
         "name": "Next push to the batteries"
+      },
+      "capacity": {
+        "name": "Capacity"
+      },
+      "max_charge_power": {
+        "name": "Maximum charge power"
+      },
+      "max_discharge_power": {
+        "name": "Maximum discharge power"
+      },
+      "next_control": {
+        "name": "Next check"
+      },
+      "check_interval": {
+        "name": "Check interval"
+      },
+      "plug_power": {
+        "name": "Power"
+      },
+      "plug_energy_today": {
+        "name": "Energy today"
+      },
+      "plug_cost_today": {
+        "name": "Cost today"
+      },
+      "plug_energy_month": {
+        "name": "Energy this month"
+      },
+      "plug_cost_month": {
+        "name": "Cost this month"
+      },
+      "plug_price_month": {
+        "name": "Average price this month"
       }
     },
     "binary_sensor": {
@@ -165,6 +198,12 @@
       },
       "schedule_in_sync": {
         "name": "Schedule matches plan"
+      },
+      "limit_reached": {
+        "name": "Charge limit reached"
+      },
+      "push_pending": {
+        "name": "New plan waiting for push"
       }
     },
     "calendar": {

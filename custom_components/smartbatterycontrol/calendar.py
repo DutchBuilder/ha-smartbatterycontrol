@@ -13,14 +13,15 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.util import dt as dt_util
 
 from .coordinator import SbcConfigEntry
-from .entity import SbcBatteryEntity, plan_blocks
+from .entity import SbcBatteryEntity, plan_blocks, soc_text
 
 
 def _event(start: datetime, end: datetime, slot: dict, battery: str) -> CalendarEvent:
     laden = slot["power_w"] < 0
     kw = f"{abs(slot['power_w']) / 1000:.1f}".replace(".", ",")
     return CalendarEvent(start=start, end=end, summary=f"{'Laden' if laden else 'Ontladen'} {kw} kW",
-                         description=f"{battery}: gepland door SmartBatteryControl ({abs(slot['power_w'])} W)",
+                         description=f"{battery}: gepland door SmartBatteryControl ({abs(slot['power_w'])} W"
+                                     + (f", laadniveau {soc_text(slot['soc'])}" if slot.get("soc") else "") + ")",
                          uid=f"{start.isoformat()}-{slot['power_w']}")
 
 

@@ -54,6 +54,7 @@ class Details:
     metrics: dict = field(default_factory=dict)  # kerncijfers sinds middernacht
     # batterij → "today"/"month" → {charge_kwh, discharge_kwh, cost_eur, value_eur, wear_eur, margin_eur}: wat er werkelijk gebeurde
     money: dict[str, dict[str, dict]] = field(default_factory=dict)
+    plugs: dict[str, dict] = field(default_factory=dict)  # stekker → verbruik en kosten deze maand (kwh, cost_eur, avg_eur_per_kwh, days)
 
 
 def add_money(totals: dict, actual: dict) -> None:
@@ -85,6 +86,14 @@ class DetailCoordinator(DataUpdateCoordinator[Details]):
                             _LOGGER.debug("Geen doorrekening voor %s %s: %s", battery["name"], day, exc)
                 details.calculations[battery["id"]] = per_day
                 details.money[battery["id"]] = await self._money(battery, now)
+            if (self.state.data or {}).get("plugs"):
+                try:  # verbruik en kosten per stekker deze maand
+                    usage = await self.client.plug_usage(midnight.replace(day=1).timestamp())
+                    details.plugs = {p["id"]: p for p in usage.get("plugs", [])}
+                except SbcAuthError:
+                    raise
+                except SbcError as exc:  # een oudere SmartBatteryControl zonder kosten per stekker
+                    _LOGGER.debug("Geen verbruik per stekker: %s", exc)
         except SbcAuthError as exc:
             raise ConfigEntryAuthFailed(str(exc)) from exc
         except SbcError as exc:
