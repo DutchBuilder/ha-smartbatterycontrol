@@ -158,3 +158,64 @@ async def test_invalid_token_starts_reauth(hass: HomeAssistant, state) -> None:
         assert not await hass.config_entries.async_setup(entry.entry_id)
         await hass.async_block_till_done()
     assert any(flow["context"]["source"] == "reauth" for flow in hass.config_entries.flow.async_progress())
+
+
+def clients(state: dict):
+    """Dezelfde nagebootste client voor de configuratieflow en voor het (opnieuw) laden van de integratie."""
+    client = fake_client(state)
+    return (patch("custom_components.smartbatterycontrol.config_flow.SbcClient", client),
+            patch("custom_components.smartbatterycontrol.SbcClient", client),
+            patch("homeassistant.util.dt.now", return_value=NOW))
+
+
+async def test_reconfigure(hass: HomeAssistant, state) -> None:
+    entry = await setup(hass, state)
+    other = MockConfigEntry(domain=DOMAIN, data={"host": "192.168.1.52", "port": 80, "token": ""}, unique_id="192.168.1.52:80")
+    other.add_to_hass(hass)
+    flow_patch, setup_patch, now_patch = clients(state)
+    with flow_patch, setup_patch, now_patch:
+        result = await entry.start_reconfigure_flow(hass)
+        assert result["type"] is FlowResultType.FORM and result["step_id"] == "reconfigure"
+        # Het adres van een andere koppeling, of een fout token: niet opslaan
+        taken = await hass.config_entries.flow.async_configure(result["flow_id"], {"host": "192.168.1.52", "port": 80, "token": ""})
+        assert taken["errors"] == {"base": "already_configured"}
+        bad = await hass.config_entries.flow.async_configure(result["flow_id"], {"host": "192.168.1.51", "port": 8080, "token": "fout"})
+        assert bad["errors"] == {"base": "invalid_auth"}
+        # Nieuw adres en poort, token leeg: het huidige token blijft
+        done = await hass.config_entries.flow.async_configure(result["flow_id"], {"host": " 192.168.1.51 ", "port": 8080, "token": ""})
+        await hass.async_block_till_done()
+    assert done["type"] is FlowResultType.ABORT and done["reason"] == "reconfigure_successful"
+    assert entry.data == {"host": "192.168.1.51", "port": 8080, "token": "sbc_goed"}
+    assert entry.unique_id == "192.168.1.51:8080" and entry.title == "Mock Title"  # een zelfgekozen naam blijft staan
+    assert entry.state is config_entries.ConfigEntryState.LOADED
+    assert hass.states.get("sensor.venus_thuis_batterij_spanning").state == "51.72"
+
+
+async def test_add_again_updates_the_existing_link(hass: HomeAssistant, state) -> None:
+    """Dezelfde SmartBatteryControl nog eens toevoegen (bijvoorbeeld met een nieuw token) werkt de koppeling bij."""
+    entry = await setup(hass, state)
+    flow_patch, setup_patch, now_patch = clients(state)
+    with flow_patch, setup_patch, now_patch:
+        result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": config_entries.SOURCE_USER})
+        done = await hass.config_entries.flow.async_configure(result["flow_id"], {"host": "192.168.1.50", "port": 80, "token": "sbc_nieuw"})
+        await hass.async_block_till_done()
+    assert done["type"] is FlowResultType.ABORT and done["reason"] == "updated_existing"
+    assert entry.data["token"] == "sbc_nieuw" and len(hass.config_entries.async_entries(DOMAIN)) == 1
+    assert entry.state is config_entries.ConfigEntryState.LOADED
+
+
+async def test_remove_and_add_again(hass: HomeAssistant, state) -> None:
+    entry = await setup(hass, state)
+    assert await hass.config_entries.async_remove(entry.entry_id)
+    await hass.async_block_till_done()
+    assert hass.states.get("sensor.venus_thuis_batterij_spanning") is None
+    flow_patch, setup_patch, now_patch = clients(state)
+    with flow_patch, setup_patch, now_patch:
+        result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": config_entries.SOURCE_USER})
+        done = await hass.config_entries.flow.async_configure(result["flow_id"], {"host": "192.168.1.50", "port": 80, "token": "sbc_goed"})
+        await hass.async_block_till_done()
+    assert done["type"] is FlowResultType.CREATE_ENTRY
+    # Alles komt terug, ook de sensoren uit de batterij en het apparaat van SmartBatteryControl zelf
+    assert hass.states.get("sensor.venus_thuis_batterij_spanning").state == "51.72"
+    assert hass.states.get("sensor.venus_thuis_state_of_charge").state == "97.0"
+    assert hass.states.get("sensor.smartbatterycontrol_grid_power").state == "430"

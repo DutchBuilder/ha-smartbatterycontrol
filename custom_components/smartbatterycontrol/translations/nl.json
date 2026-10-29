@@ -16,15 +16,30 @@
         "data": {
           "token": "API-token"
         }
+      },
+      "reconfigure": {
+        "title": "SmartBatteryControl",
+        "description": "Pas het adres, de poort of het API-token van SmartBatteryControl aan. De nieuwe gegevens worden eerst gecontroleerd.",
+        "data": {
+          "host": "Adres",
+          "port": "Poort",
+          "token": "API-token"
+        },
+        "data_description": {
+          "token": "Leeg laten om het huidige token te houden."
+        }
       }
     },
     "error": {
       "cannot_connect": "SmartBatteryControl is niet bereikbaar op dit adres.",
-      "invalid_auth": "Het API-token ontbreekt of klopt niet."
+      "invalid_auth": "Het API-token ontbreekt of klopt niet.",
+      "already_configured": "Een andere koppeling gebruikt dit adres en deze poort al."
     },
     "abort": {
       "already_configured": "Deze SmartBatteryControl is al toegevoegd.",
-      "reauth_successful": "Opnieuw verbonden."
+      "reauth_successful": "Opnieuw verbonden.",
+      "reconfigure_successful": "De instellingen zijn bijgewerkt.",
+      "updated_existing": "Deze SmartBatteryControl was al gekoppeld; de koppeling is bijgewerkt met deze gegevens."
     }
   },
   "entity": {

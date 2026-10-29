@@ -128,6 +128,7 @@ class SensorCoordinator(DataUpdateCoordinator[dict[str, list[dict]]]):
         super().__init__(hass, _LOGGER, config_entry=entry, name=f"{DOMAIN} sensoren", update_interval=SENSOR_INTERVAL)
         self.client = client
         self.state = state
+        self._failing: set[str] = set()
 
     async def _async_update_data(self) -> dict[str, list[dict]]:
         out = dict(self.data or {})
@@ -135,10 +136,15 @@ class SensorCoordinator(DataUpdateCoordinator[dict[str, list[dict]]]):
             for battery in (self.state.data or {}).get("batteries", []):
                 try:
                     out[battery["id"]] = (await self.client.details(battery["id"])).get("sensors", [])
+                    if battery["id"] in self._failing:
+                        self._failing.discard(battery["id"])
+                        _LOGGER.info("Sensoren van %s komen weer binnen", battery["name"])
                 except SbcAuthError:
                     raise
                 except SbcError as exc:  # één batterij onbereikbaar: de andere gewoon bijwerken, deze houdt zijn laatste waarden
-                    _LOGGER.debug("Sensoren van %s niet op te halen: %s", battery["name"], exc)
+                    if battery["id"] not in self._failing:  # één keer melden, niet elke minuut
+                        self._failing.add(battery["id"])
+                        _LOGGER.warning("Sensoren van %s niet op te halen: %s", battery["name"], exc)
         except SbcAuthError as exc:
             raise ConfigEntryAuthFailed(str(exc)) from exc
         return out

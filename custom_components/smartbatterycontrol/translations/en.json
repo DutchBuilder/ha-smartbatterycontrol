@@ -16,15 +16,30 @@
         "data": {
           "token": "API token"
         }
+      },
+      "reconfigure": {
+        "title": "SmartBatteryControl",
+        "description": "Change the address, port or API token of SmartBatteryControl. The new settings are checked before they are saved.",
+        "data": {
+          "host": "Address",
+          "port": "Port",
+          "token": "API token"
+        },
+        "data_description": {
+          "token": "Leave empty to keep the current token."
+        }
       }
     },
     "error": {
       "cannot_connect": "SmartBatteryControl cannot be reached at this address.",
-      "invalid_auth": "The API token is missing or invalid."
+      "invalid_auth": "The API token is missing or invalid.",
+      "already_configured": "Another SmartBatteryControl link already uses this address and port."
     },
     "abort": {
       "already_configured": "This SmartBatteryControl is already configured.",
-      "reauth_successful": "Reconnected."
+      "reauth_successful": "Reconnected.",
+      "reconfigure_successful": "The settings have been updated.",
+      "updated_existing": "This SmartBatteryControl was already linked; the link has been updated with these details."
     }
   },
   "entity": {

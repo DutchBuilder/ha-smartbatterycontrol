@@ -4,10 +4,11 @@ from __future__ import annotations
 from homeassistant.const import CONF_HOST, CONF_PORT, CONF_TOKEN, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import SbcAuthError, SbcClient, SbcError
-from .const import DEFAULT_PORT
+from .const import DEFAULT_PORT, DOMAIN
 from .coordinator import DetailCoordinator, SbcConfigEntry, SbcData, SensorCoordinator, StateCoordinator
 
 PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR, Platform.CALENDAR]
@@ -29,6 +30,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: SbcConfigEntry) -> bool:
     sensors = SensorCoordinator(hass, entry, client, state)
     await sensors.async_config_entry_first_refresh()
     entry.runtime_data = SbcData(client, state, details, sensors, version)
+    # Eerst het apparaat SmartBatteryControl zelf: de batterijen hangen eraan (via_device), welk platform ook als eerste laadt
+    dr.async_get(hass).async_get_or_create(config_entry_id=entry.entry_id, identifiers={(DOMAIN, entry.entry_id)},
+                                           name="SmartBatteryControl", manufacturer="SmartBatteryControl", sw_version=version,
+                                           configuration_url=client.base.removesuffix("/api"))
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
 

@@ -15,6 +15,14 @@ Alles gaat over je eigen netwerk; er is geen cloud nodig.
 4. Ga in Home Assistant naar **Instellingen → Apparaten en diensten → Integratie toevoegen → SmartBatteryControl**.
    Vul het adres in (bijvoorbeeld `192.168.1.50`), poort `80` en plak het token.
 
+### Adres, poort of token wijzigen
+
+Kies bij de integratie **⋮ → Opnieuw configureren**. Pas het adres, de poort of het token aan; laat je het token leeg,
+dan blijft het huidige. De nieuwe gegevens worden eerst gecontroleerd, daarna laadt de integratie opnieuw.
+
+Verwijder je de integratie en voeg je hem opnieuw toe, dan komen alle apparaten en sensoren terug. Voeg je een
+SmartBatteryControl toe die al gekoppeld is (bijvoorbeeld met een nieuw token), dan wordt die koppeling bijgewerkt.
+
 ## Wat je krijgt
 
 Per batterij een apparaat met:
@@ -59,7 +67,8 @@ and tomorrow's plans (also as a calendar) with a full calculation, what charging
 round-trip efficiency, and electricity prices. Everything stays on your own network.
 
 Install through HACS as a custom repository, restart Home Assistant, create a read-only API token in SmartBatteryControl
-(Settings → Security → API tokens) and add the integration with the address, port and token.
+(Settings → Security → API tokens) and add the integration with the address, port and token. To change the address,
+port or token later, choose **⋮ → Reconfigure** on the integration (leave the token empty to keep the current one).
 
 ## Licentie / License
 
