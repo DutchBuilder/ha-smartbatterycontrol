@@ -1,0 +1,120 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "SmartBatteryControl",
+        "description": "Enter the address of your SmartBatteryControl (for example 192.168.1.50). If SmartBatteryControl has a password, create an API token under Settings → Security and paste it here.",
+        "data": {
+          "host": "Address",
+          "port": "Port",
+          "token": "API token"
+        }
+      },
+      "reauth_confirm": {
+        "title": "SmartBatteryControl",
+        "description": "The API token is no longer valid. Create a new token in SmartBatteryControl and paste it here.",
+        "data": {
+          "token": "API token"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "SmartBatteryControl cannot be reached at this address.",
+      "invalid_auth": "The API token is missing or invalid."
+    },
+    "abort": {
+      "already_configured": "This SmartBatteryControl is already configured.",
+      "reauth_successful": "Reconnected."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "soc": {
+        "name": "State of charge"
+      },
+      "ac_power": {
+        "name": "Power"
+      },
+      "battery_power": {
+        "name": "Battery-side power"
+      },
+      "mode": {
+        "name": "Work mode"
+      },
+      "connection": {
+        "name": "Connection"
+      },
+      "expected_power": {
+        "name": "Planned power"
+      },
+      "realtime_setpoint": {
+        "name": "Self-consumption setpoint"
+      },
+      "rte": {
+        "name": "Round-trip efficiency (30 days)"
+      },
+      "next_block": {
+        "name": "Next block"
+      },
+      "plan_today": {
+        "name": "Plan today (planner estimate)"
+      },
+      "plan_tomorrow": {
+        "name": "Plan tomorrow (planner estimate)"
+      },
+      "plan_today_net": {
+        "name": "Plan today (calculated)"
+      },
+      "plan_tomorrow_net": {
+        "name": "Plan tomorrow (calculated)"
+      },
+      "charged_today": {
+        "name": "Charged today"
+      },
+      "discharged_today": {
+        "name": "Discharged today"
+      },
+      "grid_power": {
+        "name": "Grid power"
+      },
+      "solar_power": {
+        "name": "Solar power"
+      },
+      "price_now": {
+        "name": "Electricity price now"
+      },
+      "feed_in_now": {
+        "name": "Feed-in price now"
+      },
+      "price_lowest_today": {
+        "name": "Lowest price today"
+      },
+      "price_highest_today": {
+        "name": "Highest price today"
+      },
+      "price_source": {
+        "name": "Price source"
+      },
+      "strategy": {
+        "name": "Strategy"
+      }
+    },
+    "binary_sensor": {
+      "reachable": {
+        "name": "Reachable"
+      },
+      "control": {
+        "name": "Control"
+      },
+      "self_consumption": {
+        "name": "Self-consumption active"
+      },
+      "deviating": {
+        "name": "Not following schedule"
+      },
+      "schedule_in_sync": {
+        "name": "Schedule matches plan"
+      }
+    }
+  }
+}

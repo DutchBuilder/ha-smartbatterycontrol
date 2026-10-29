@@ -1,0 +1,120 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "SmartBatteryControl",
+        "description": "Vul het adres van je SmartBatteryControl in (bijvoorbeeld 192.168.1.50). Heeft SmartBatteryControl een wachtwoord, maak dan een API-token aan onder Instellingen → Beveiliging en plak het hier.",
+        "data": {
+          "host": "Adres",
+          "port": "Poort",
+          "token": "API-token"
+        }
+      },
+      "reauth_confirm": {
+        "title": "SmartBatteryControl",
+        "description": "Het API-token klopt niet meer. Maak een nieuw token aan in SmartBatteryControl en plak het hier.",
+        "data": {
+          "token": "API-token"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "SmartBatteryControl is niet bereikbaar op dit adres.",
+      "invalid_auth": "Het API-token ontbreekt of klopt niet."
+    },
+    "abort": {
+      "already_configured": "Deze SmartBatteryControl is al toegevoegd.",
+      "reauth_successful": "Opnieuw verbonden."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "soc": {
+        "name": "Laadniveau"
+      },
+      "ac_power": {
+        "name": "Vermogen"
+      },
+      "battery_power": {
+        "name": "Vermogen batterijkant"
+      },
+      "mode": {
+        "name": "Werkmodus"
+      },
+      "connection": {
+        "name": "Verbinding"
+      },
+      "expected_power": {
+        "name": "Gepland vermogen"
+      },
+      "realtime_setpoint": {
+        "name": "Zelfconsumptie setpunt"
+      },
+      "rte": {
+        "name": "Rendement (RTE, 30 dagen)"
+      },
+      "next_block": {
+        "name": "Volgend blok"
+      },
+      "plan_today": {
+        "name": "Plan vandaag (schatting planner)"
+      },
+      "plan_tomorrow": {
+        "name": "Plan morgen (schatting planner)"
+      },
+      "plan_today_net": {
+        "name": "Plan vandaag (doorgerekend)"
+      },
+      "plan_tomorrow_net": {
+        "name": "Plan morgen (doorgerekend)"
+      },
+      "charged_today": {
+        "name": "Geladen vandaag"
+      },
+      "discharged_today": {
+        "name": "Ontladen vandaag"
+      },
+      "grid_power": {
+        "name": "Net"
+      },
+      "solar_power": {
+        "name": "Zon"
+      },
+      "price_now": {
+        "name": "Stroomprijs nu"
+      },
+      "feed_in_now": {
+        "name": "Terugleverprijs nu"
+      },
+      "price_lowest_today": {
+        "name": "Laagste prijs vandaag"
+      },
+      "price_highest_today": {
+        "name": "Hoogste prijs vandaag"
+      },
+      "price_source": {
+        "name": "Prijsbron"
+      },
+      "strategy": {
+        "name": "Strategie"
+      }
+    },
+    "binary_sensor": {
+      "reachable": {
+        "name": "Bereikbaar"
+      },
+      "control": {
+        "name": "Sturen"
+      },
+      "self_consumption": {
+        "name": "Zelfconsumptie actief"
+      },
+      "deviating": {
+        "name": "Volgt schema niet"
+      },
+      "schedule_in_sync": {
+        "name": "Schema gelijk aan plan"
+      }
+    }
+  }
+}
