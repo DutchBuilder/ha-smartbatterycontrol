@@ -97,6 +97,30 @@
       },
       "strategy": {
         "name": "Strategy"
+      },
+      "schedule_today": {
+        "name": "Schedule today"
+      },
+      "schedule_tomorrow": {
+        "name": "Schedule tomorrow"
+      },
+      "charge_cost_today": {
+        "name": "Charging cost today"
+      },
+      "discharge_value_today": {
+        "name": "Discharge value today"
+      },
+      "net_today": {
+        "name": "Net result today"
+      },
+      "charge_cost_month": {
+        "name": "Charging cost this month"
+      },
+      "discharge_value_month": {
+        "name": "Discharge value this month"
+      },
+      "net_month": {
+        "name": "Net result this month"
       }
     },
     "binary_sensor": {
@@ -114,6 +138,11 @@
       },
       "schedule_in_sync": {
         "name": "Schedule matches plan"
+      }
+    },
+    "calendar": {
+      "plan_calendar": {
+        "name": "Plan"
       }
     }
   }

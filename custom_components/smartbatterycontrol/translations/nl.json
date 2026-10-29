@@ -97,6 +97,30 @@
       },
       "strategy": {
         "name": "Strategie"
+      },
+      "schedule_today": {
+        "name": "Planning vandaag"
+      },
+      "schedule_tomorrow": {
+        "name": "Planning morgen"
+      },
+      "charge_cost_today": {
+        "name": "Laadkosten vandaag"
+      },
+      "discharge_value_today": {
+        "name": "Opbrengst ontladen vandaag"
+      },
+      "net_today": {
+        "name": "Netto vandaag"
+      },
+      "charge_cost_month": {
+        "name": "Laadkosten deze maand"
+      },
+      "discharge_value_month": {
+        "name": "Opbrengst ontladen deze maand"
+      },
+      "net_month": {
+        "name": "Netto deze maand"
       }
     },
     "binary_sensor": {
@@ -114,6 +138,11 @@
       },
       "schedule_in_sync": {
         "name": "Schema gelijk aan plan"
+      }
+    },
+    "calendar": {
+      "plan_calendar": {
+        "name": "Planning"
       }
     }
   }

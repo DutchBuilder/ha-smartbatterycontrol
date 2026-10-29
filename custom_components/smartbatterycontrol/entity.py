@@ -1,7 +1,7 @@
 """Basisklassen: één apparaat per batterij en één voor SmartBatteryControl zelf."""
 from __future__ import annotations
 
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -51,6 +51,34 @@ class SbcBatteryEntity(CoordinatorEntity[StateCoordinator]):
 def slot_text(slot: dict) -> str:
     kind = "laden" if slot["power_w"] < 0 else "ontladen"
     return f"{slot['start']}–{slot['end']} {kind} {abs(slot['power_w'])} W"
+
+
+def plan_blocks(battery: dict) -> list[tuple[datetime, datetime, dict]]:
+    """Alle geplande blokken van vandaag en morgen als (begin, eind, slot); 23:59 telt als het eind van de dag."""
+    tz = dt_util.get_default_time_zone()
+    out = []
+    for day, plan in sorted((battery.get("plans") or {}).items()):
+        d = datetime.fromisoformat(day).date()
+        for slot in plan.get("slots", []):
+            if not slot.get("enabled") or not slot.get("power_w"):
+                continue
+            start = datetime.combine(d, time.fromisoformat(slot["start"]), tzinfo=tz)
+            end = datetime.combine(d, time.fromisoformat(slot["end"]), tzinfo=tz)
+            if slot["end"] == "23:59":
+                end = datetime.combine(d + timedelta(days=1), time(0), tzinfo=tz)
+            if end > start:
+                out.append((start, end, slot))
+    return sorted(out, key=lambda x: x[0])
+
+
+def schedule_text(battery: dict, day: str) -> str | None:
+    """De blokken van één dag als één regel (een sensor mag hooguit 255 tekens), of "geen" zonder blokken."""
+    plan = (battery.get("plans") or {}).get(day)
+    if plan is None:
+        return None
+    parts = [slot_text(s) for s in plan.get("slots", []) if s.get("enabled") and s.get("power_w")]
+    text = ", ".join(parts) or "geen blokken"
+    return text if len(text) <= 255 else text[:252] + "…"
 
 
 def next_block(battery: dict) -> tuple[datetime, dict] | None:

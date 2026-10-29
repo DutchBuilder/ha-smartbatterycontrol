@@ -48,3 +48,15 @@ class SbcClient:
 
     async def metrics(self, hours: float) -> dict:
         return await self._get("/metrics", {"hours": f"{hours:.3f}"})
+
+    async def details(self, battery_id: str, max_age: int = 600) -> dict:
+        """Alle sensoren van een batterij, uit de cache van SmartBatteryControl (die houdt ze zelf vers)."""
+        return await self._get(f"/batteries/{battery_id}/details", {"max_age": str(max_age)})
+
+    async def review(self, battery_id: str, day: date) -> dict:
+        """Plan tegen werkelijkheid van één dag (vandaag: tot nu): wat laden kostte en ontladen opleverde."""
+        return await self._get(f"/plan/{battery_id}/review", {"day": day.isoformat()})
+
+    async def reviews(self, battery_id: str, days: int = 31) -> dict:
+        """De bewaarde controles van de afgelopen dagen (tot en met gisteren)."""
+        return await self._get(f"/plan/{battery_id}/reviews", {"days": str(days)})

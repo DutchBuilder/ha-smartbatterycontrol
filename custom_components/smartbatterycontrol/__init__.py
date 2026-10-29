@@ -8,9 +8,9 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import SbcAuthError, SbcClient, SbcError
 from .const import DEFAULT_PORT
-from .coordinator import DetailCoordinator, SbcConfigEntry, SbcData, StateCoordinator
+from .coordinator import DetailCoordinator, SbcConfigEntry, SbcData, SensorCoordinator, StateCoordinator
 
-PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR]
+PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR, Platform.CALENDAR]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: SbcConfigEntry) -> bool:
@@ -26,7 +26,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: SbcConfigEntry) -> bool:
     await state.async_config_entry_first_refresh()
     details = DetailCoordinator(hass, entry, client, state)
     await details.async_config_entry_first_refresh()
-    entry.runtime_data = SbcData(client, state, details, version)
+    sensors = SensorCoordinator(hass, entry, client, state)
+    await sensors.async_config_entry_first_refresh()
+    entry.runtime_data = SbcData(client, state, details, sensors, version)
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
 
