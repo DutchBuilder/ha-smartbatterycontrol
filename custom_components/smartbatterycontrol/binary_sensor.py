@@ -1,4 +1,5 @@
-"""Aan/uit-sensoren per batterij: bereikbaar, sturen, zelfconsumptie, afwijking en schema gelijk aan het plan."""
+"""Aan/uit-sensoren per batterij (bereikbaar, sturen, zelfconsumptie, afwijking, schema gelijk aan het plan, bijladen,
+begrensd in de app) en van SmartBatteryControl zelf (een probleem bij de controles, een nieuwe versie)."""
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -10,8 +11,8 @@ from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .coordinator import SbcConfigEntry
-from .entity import SbcBatteryEntity
+from .coordinator import Details, SbcConfigEntry
+from .entity import SbcBatteryEntity, SbcHubDetailEntity
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -27,7 +28,9 @@ BINARY_SENSORS: tuple[BatteryBinary, ...] = (
     BatteryBinary(key="control", entity_category=EntityCategory.DIAGNOSTIC, value=lambda b: b.get("control"),
                   attrs=lambda b: {"schedule_access": (b.get("schedule_access") or {}).get("reason")}),
     BatteryBinary(key="self_consumption", device_class=BinarySensorDeviceClass.RUNNING,
-                  value=lambda b: (b.get("realtime") or {}).get("active")),
+                  value=lambda b: (b.get("realtime") or {}).get("active"),
+                  # zelfconsumptie of nul op de fase, de fase, en de batterijen op dezelfde fase die samenwerken
+                  attrs=lambda b: {k: (b.get("realtime") or {}).get(k) for k in ("kind", "phase", "setpoint_w", "partners")}),
     BatteryBinary(key="deviating", device_class=BinarySensorDeviceClass.PROBLEM,
                   value=lambda b: (b.get("power_check") or {}).get("active")),
     # Een blok is gestopt omdat de batterij zijn laad- of ontlaadgrens bereikte
@@ -42,7 +45,53 @@ BINARY_SENSORS: tuple[BatteryBinary, ...] = (
                   # Gelijk aan wat er naar de batterij gestuurd is (bij pushen volgens schema kan het plan al verder zijn)
                   value=lambda b: (b["in_sync"] if "in_sync" in b else b.get("slots") == b.get("planned"))
                   if b.get("control") and b.get("slots") is not None else None),
+    # Bijladen tot vol: een laadblok was voorbij voordat de batterij vol was, SmartBatteryControl laadt nog even door
+    BatteryBinary(key="topping_up", device_class=BinarySensorDeviceClass.RUNNING,
+                  value=lambda b: (b.get("topup") or {}).get("active") if "topup" in b else None,
+                  attrs=lambda b: {k: (b.get("topup") or {}).get(k) for k in ("power_w", "start", "until", "note")}),
+    # Een Marstek die in de app op 800 W begrensd is, haalt het geplande vermogen niet
+    BatteryBinary(key="app_limited", device_class=BinarySensorDeviceClass.PROBLEM,
+                  value=lambda b: (b.get("power_check") or {}).get("app_limited")),
 )
+
+
+@dataclass(frozen=True, kw_only=True)
+class HubBinary(BinarySensorEntityDescription):
+    value: Callable[[Details], bool | None]
+    attrs: Callable[[Details], dict] | None = None
+    exists: Callable[[Details], bool]
+
+
+HUB_BINARY_SENSORS: tuple[HubBinary, ...] = (
+    # Een controle (elk kwartier) met een waarschuwing of fout
+    HubBinary(key="health_problem", device_class=BinarySensorDeviceClass.PROBLEM,
+              value=lambda d: any(c.get("status") in ("warning", "error") for c in (d.stats.get("health") or {}).get("checks") or []),
+              exists=lambda d: bool(d.stats.get("health"))),
+    # Een nieuwe versie van SmartBatteryControl (installeren gaat in SmartBatteryControl, of vanzelf in het venster)
+    HubBinary(key="update_available", device_class=BinarySensorDeviceClass.UPDATE,
+              value=lambda d: bool(d.updates.get("latest")),
+              attrs=lambda d: {"current": d.updates.get("current"), "latest": (d.updates.get("latest") or {}).get("version"),
+                               "title": (d.updates.get("latest") or {}).get("title")},
+              exists=lambda d: bool(d.updates)),
+)
+
+
+class HubBinaryEntity(SbcHubDetailEntity, BinarySensorEntity):
+    entity_description: HubBinary
+
+    def __init__(self, entry: SbcConfigEntry, description: HubBinary) -> None:
+        super().__init__(entry, description.key)
+        self.entity_description = description
+        self._attr_translation_key = description.key
+
+    @property
+    def is_on(self) -> bool | None:
+        return self.entity_description.value(self.coordinator.data) if self.coordinator.data else None
+
+    @property
+    def extra_state_attributes(self) -> dict | None:
+        attrs = self.entity_description.attrs
+        return attrs(self.coordinator.data) if attrs and self.coordinator.data else None
 
 
 class BatteryBinaryEntity(SbcBatteryEntity, BinarySensorEntity):
@@ -74,3 +123,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: SbcConfigEntry, async_ad
 
     add_batteries()
     entry.async_on_unload(state.async_add_listener(add_batteries))
+
+    details = entry.runtime_data.details
+    known_hub: set[str] = set()
+
+    @callback
+    def add_hub() -> None:
+        if details.data is None:
+            return
+        new = [d for d in HUB_BINARY_SENSORS if d.key not in known_hub and d.exists(details.data)]
+        known_hub.update(d.key for d in new)
+        async_add_entities(HubBinaryEntity(entry, d) for d in new)
+
+    add_hub()
+    entry.async_on_unload(details.async_add_listener(add_hub))

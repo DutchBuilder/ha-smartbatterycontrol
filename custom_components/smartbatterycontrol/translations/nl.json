@@ -181,6 +181,525 @@
       },
       "plug_price_month": {
         "name": "Gemiddelde prijs deze maand"
+      },
+      "end_result_today": {
+        "name": "Eindstand vandaag"
+      },
+      "end_result_tomorrow": {
+        "name": "Eindstand morgen"
+      },
+      "last_slot": {
+        "name": "Laatste slot per kWh"
+      },
+      "result_yesterday": {
+        "name": "Resultaat gisteren"
+      },
+      "phase": {
+        "name": "Fase"
+      },
+      "charge_adjustment": {
+        "name": "Laadbijstelling (zelflerend)"
+      },
+      "last_push": {
+        "name": "Laatste push naar de batterij"
+      },
+      "enforce_power": {
+        "name": "Afgedwongen extra vermogen"
+      },
+      "grid_power_l1": {
+        "name": "Net L1"
+      },
+      "grid_power_l2": {
+        "name": "Net L2"
+      },
+      "grid_power_l3": {
+        "name": "Net L3"
+      },
+      "all_batteries_today": {
+        "name": "Alle batterijen vandaag"
+      },
+      "all_batteries_tomorrow": {
+        "name": "Alle batterijen morgen"
+      },
+      "all_batteries_charge_price_today": {
+        "name": "Alle batterijen laden per kWh vandaag"
+      },
+      "all_batteries_charge_price_tomorrow": {
+        "name": "Alle batterijen laden per kWh morgen"
+      },
+      "all_batteries_discharge_price_today": {
+        "name": "Alle batterijen ontladen per kWh vandaag"
+      },
+      "all_batteries_discharge_price_tomorrow": {
+        "name": "Alle batterijen ontladen per kWh morgen"
+      },
+      "solar_forecast_today": {
+        "name": "Zonverwachting vandaag"
+      },
+      "solar_forecast_tomorrow": {
+        "name": "Zonverwachting morgen"
+      },
+      "solar_forecast_remaining": {
+        "name": "Zonverwachting rest van vandaag"
+      },
+      "solar_typical_year": {
+        "name": "Typisch zonnejaar"
+      },
+      "solar_peak_today": {
+        "name": "Zonnepiek vandaag"
+      },
+      "solar_vs_typical": {
+        "name": "Zon tegen een gewoon jaar (30 dagen)"
+      },
+      "solar_forecast_error": {
+        "name": "Afwijking zonverwachting (30 dagen)"
+      },
+      "best_forecaster": {
+        "name": "Beste zonvoorspeller"
+      },
+      "house_forecast_today": {
+        "name": "Verwacht verbruik vandaag"
+      },
+      "house_forecast_tomorrow": {
+        "name": "Verwacht verbruik morgen"
+      },
+      "health_problems": {
+        "name": "Controles met een probleem"
+      },
+      "database_size": {
+        "name": "Database historie"
+      },
+      "storage_free": {
+        "name": "Vrije opslag"
+      },
+      "last_backup": {
+        "name": "Laatste back-up"
+      },
+      "version": {
+        "name": "Versie"
+      },
+      "latest_version": {
+        "name": "Nieuwste versie"
+      },
+      "forecaster_today": {
+        "name": "Zonverwachting {source} vandaag"
+      },
+      "forecaster_tomorrow": {
+        "name": "Zonverwachting {source} morgen"
+      },
+      "forecaster_score": {
+        "name": "Score zonverwachting {source}"
+      },
+      "solar_source_power": {
+        "name": "Vermogen"
+      },
+      "solar_source_total": {
+        "name": "Totaal opgewekt"
+      },
+      "solar_source_status": {
+        "name": "Status"
+      },
+      "house_today": {
+        "name": "Huisverbruik vandaag"
+      },
+      "house_week": {
+        "name": "Huisverbruik (7 dagen)"
+      },
+      "house_month": {
+        "name": "Huisverbruik (30 dagen)"
+      },
+      "house_year": {
+        "name": "Huisverbruik dit jaar"
+      },
+      "grid_import_today": {
+        "name": "Afname van het net vandaag"
+      },
+      "grid_import_week": {
+        "name": "Afname van het net (7 dagen)"
+      },
+      "grid_import_month": {
+        "name": "Afname van het net (30 dagen)"
+      },
+      "grid_import_year": {
+        "name": "Afname van het net dit jaar"
+      },
+      "grid_export_today": {
+        "name": "Teruglevering aan het net vandaag"
+      },
+      "grid_export_week": {
+        "name": "Teruglevering aan het net (7 dagen)"
+      },
+      "grid_export_month": {
+        "name": "Teruglevering aan het net (30 dagen)"
+      },
+      "grid_export_year": {
+        "name": "Teruglevering aan het net dit jaar"
+      },
+      "grid_to_house_today": {
+        "name": "Van het net naar het huis vandaag"
+      },
+      "grid_to_house_week": {
+        "name": "Van het net naar het huis (7 dagen)"
+      },
+      "grid_to_house_month": {
+        "name": "Van het net naar het huis (30 dagen)"
+      },
+      "grid_to_house_year": {
+        "name": "Van het net naar het huis dit jaar"
+      },
+      "batteries_charged_today": {
+        "name": "Batterijen geladen vandaag"
+      },
+      "batteries_charged_week": {
+        "name": "Batterijen geladen (7 dagen)"
+      },
+      "batteries_charged_month": {
+        "name": "Batterijen geladen (30 dagen)"
+      },
+      "batteries_charged_year": {
+        "name": "Batterijen geladen dit jaar"
+      },
+      "batteries_discharged_today": {
+        "name": "Batterijen ontladen vandaag"
+      },
+      "batteries_discharged_week": {
+        "name": "Batterijen ontladen (7 dagen)"
+      },
+      "batteries_discharged_month": {
+        "name": "Batterijen ontladen (30 dagen)"
+      },
+      "batteries_discharged_year": {
+        "name": "Batterijen ontladen dit jaar"
+      },
+      "grid_to_batteries_today": {
+        "name": "Van het net in de batterijen vandaag"
+      },
+      "grid_to_batteries_week": {
+        "name": "Van het net in de batterijen (7 dagen)"
+      },
+      "grid_to_batteries_month": {
+        "name": "Van het net in de batterijen (30 dagen)"
+      },
+      "grid_to_batteries_year": {
+        "name": "Van het net in de batterijen dit jaar"
+      },
+      "batteries_to_grid_today": {
+        "name": "Van de batterijen naar het net vandaag"
+      },
+      "batteries_to_grid_week": {
+        "name": "Van de batterijen naar het net (7 dagen)"
+      },
+      "batteries_to_grid_month": {
+        "name": "Van de batterijen naar het net (30 dagen)"
+      },
+      "batteries_to_grid_year": {
+        "name": "Van de batterijen naar het net dit jaar"
+      },
+      "solar_to_batteries_today": {
+        "name": "Zon in de batterijen vandaag"
+      },
+      "solar_to_batteries_week": {
+        "name": "Zon in de batterijen (7 dagen)"
+      },
+      "solar_to_batteries_month": {
+        "name": "Zon in de batterijen (30 dagen)"
+      },
+      "solar_to_batteries_year": {
+        "name": "Zon in de batterijen dit jaar"
+      },
+      "solar_production_today": {
+        "name": "Zon opgewekt vandaag"
+      },
+      "solar_production_week": {
+        "name": "Zon opgewekt (7 dagen)"
+      },
+      "solar_production_month": {
+        "name": "Zon opgewekt (30 dagen)"
+      },
+      "solar_production_year": {
+        "name": "Zon opgewekt dit jaar"
+      },
+      "solar_direct_today": {
+        "name": "Zon direct in huis vandaag"
+      },
+      "solar_direct_week": {
+        "name": "Zon direct in huis (7 dagen)"
+      },
+      "solar_direct_month": {
+        "name": "Zon direct in huis (30 dagen)"
+      },
+      "solar_direct_year": {
+        "name": "Zon direct in huis dit jaar"
+      },
+      "solar_exported_today": {
+        "name": "Zon teruggeleverd vandaag"
+      },
+      "solar_exported_week": {
+        "name": "Zon teruggeleverd (7 dagen)"
+      },
+      "solar_exported_month": {
+        "name": "Zon teruggeleverd (30 dagen)"
+      },
+      "solar_exported_year": {
+        "name": "Zon teruggeleverd dit jaar"
+      },
+      "solar_kept_today": {
+        "name": "Zon niet meteen teruggeleverd vandaag"
+      },
+      "solar_kept_week": {
+        "name": "Zon niet meteen teruggeleverd (7 dagen)"
+      },
+      "solar_kept_month": {
+        "name": "Zon niet meteen teruggeleverd (30 dagen)"
+      },
+      "solar_kept_year": {
+        "name": "Zon niet meteen teruggeleverd dit jaar"
+      },
+      "battery_earnings_today": {
+        "name": "Opbrengst batterijen vandaag"
+      },
+      "battery_earnings_week": {
+        "name": "Opbrengst batterijen (7 dagen)"
+      },
+      "battery_earnings_month": {
+        "name": "Opbrengst batterijen (30 dagen)"
+      },
+      "battery_earnings_year": {
+        "name": "Opbrengst batterijen dit jaar"
+      },
+      "grid_cost_today": {
+        "name": "Netkosten vandaag"
+      },
+      "grid_cost_week": {
+        "name": "Netkosten (7 dagen)"
+      },
+      "grid_cost_month": {
+        "name": "Netkosten (30 dagen)"
+      },
+      "grid_cost_year": {
+        "name": "Netkosten dit jaar"
+      },
+      "electricity_bill_today": {
+        "name": "Stroomrekening vandaag"
+      },
+      "electricity_bill_week": {
+        "name": "Stroomrekening (7 dagen)"
+      },
+      "electricity_bill_month": {
+        "name": "Stroomrekening (30 dagen)"
+      },
+      "electricity_bill_year": {
+        "name": "Stroomrekening dit jaar"
+      },
+      "solar_value_today": {
+        "name": "Zonopbrengst vandaag"
+      },
+      "solar_value_week": {
+        "name": "Zonopbrengst (7 dagen)"
+      },
+      "solar_value_month": {
+        "name": "Zonopbrengst (30 dagen)"
+      },
+      "solar_value_year": {
+        "name": "Zonopbrengst dit jaar"
+      },
+      "self_sufficiency_today": {
+        "name": "Zelfvoorzienend vandaag"
+      },
+      "self_sufficiency_week": {
+        "name": "Zelfvoorzienend (7 dagen)"
+      },
+      "self_sufficiency_month": {
+        "name": "Zelfvoorzienend (30 dagen)"
+      },
+      "self_sufficiency_year": {
+        "name": "Zelfvoorzienend dit jaar"
+      },
+      "battery_share_today": {
+        "name": "Huis uit de batterijen vandaag"
+      },
+      "battery_share_week": {
+        "name": "Huis uit de batterijen (7 dagen)"
+      },
+      "battery_share_month": {
+        "name": "Huis uit de batterijen (30 dagen)"
+      },
+      "battery_share_year": {
+        "name": "Huis uit de batterijen dit jaar"
+      },
+      "batteries_efficiency_today": {
+        "name": "Rendement batterijen vandaag"
+      },
+      "batteries_efficiency_week": {
+        "name": "Rendement batterijen (7 dagen)"
+      },
+      "batteries_efficiency_month": {
+        "name": "Rendement batterijen (30 dagen)"
+      },
+      "batteries_efficiency_year": {
+        "name": "Rendement batterijen dit jaar"
+      },
+      "solar_share_today": {
+        "name": "Huis direct uit de zon vandaag"
+      },
+      "solar_share_week": {
+        "name": "Huis direct uit de zon (7 dagen)"
+      },
+      "solar_share_month": {
+        "name": "Huis direct uit de zon (30 dagen)"
+      },
+      "solar_share_year": {
+        "name": "Huis direct uit de zon dit jaar"
+      },
+      "solar_self_use_today": {
+        "name": "Zon zelf gebruikt vandaag"
+      },
+      "solar_self_use_week": {
+        "name": "Zon zelf gebruikt (7 dagen)"
+      },
+      "solar_self_use_month": {
+        "name": "Zon zelf gebruikt (30 dagen)"
+      },
+      "solar_self_use_year": {
+        "name": "Zon zelf gebruikt dit jaar"
+      },
+      "grid_charge_price_today": {
+        "name": "Gemiddelde prijs laden uit het net vandaag"
+      },
+      "grid_charge_price_week": {
+        "name": "Gemiddelde prijs laden uit het net (7 dagen)"
+      },
+      "grid_charge_price_month": {
+        "name": "Gemiddelde prijs laden uit het net (30 dagen)"
+      },
+      "grid_charge_price_year": {
+        "name": "Gemiddelde prijs laden uit het net dit jaar"
+      },
+      "batteries_discharge_price_today": {
+        "name": "Batterijen gemiddelde prijs bij ontladen vandaag"
+      },
+      "batteries_discharge_price_week": {
+        "name": "Batterijen gemiddelde prijs bij ontladen (7 dagen)"
+      },
+      "batteries_discharge_price_month": {
+        "name": "Batterijen gemiddelde prijs bij ontladen (30 dagen)"
+      },
+      "batteries_discharge_price_year": {
+        "name": "Batterijen gemiddelde prijs bij ontladen dit jaar"
+      },
+      "price_spread_today": {
+        "name": "Prijsverschil laden en ontladen vandaag"
+      },
+      "price_spread_week": {
+        "name": "Prijsverschil laden en ontladen (7 dagen)"
+      },
+      "price_spread_month": {
+        "name": "Prijsverschil laden en ontladen (30 dagen)"
+      },
+      "price_spread_year": {
+        "name": "Prijsverschil laden en ontladen dit jaar"
+      },
+      "import_price_today": {
+        "name": "Gemiddelde stroomprijs vandaag"
+      },
+      "import_price_week": {
+        "name": "Gemiddelde stroomprijs (7 dagen)"
+      },
+      "import_price_month": {
+        "name": "Gemiddelde stroomprijs (30 dagen)"
+      },
+      "import_price_year": {
+        "name": "Gemiddelde stroomprijs dit jaar"
+      },
+      "export_price_today": {
+        "name": "Gemiddelde terugleverprijs vandaag"
+      },
+      "export_price_week": {
+        "name": "Gemiddelde terugleverprijs (7 dagen)"
+      },
+      "export_price_month": {
+        "name": "Gemiddelde terugleverprijs (30 dagen)"
+      },
+      "export_price_year": {
+        "name": "Gemiddelde terugleverprijs dit jaar"
+      },
+      "charged_week": {
+        "name": "Geladen (7 dagen)"
+      },
+      "charged_month": {
+        "name": "Geladen (30 dagen)"
+      },
+      "charged_year": {
+        "name": "Geladen dit jaar"
+      },
+      "discharged_week": {
+        "name": "Ontladen (7 dagen)"
+      },
+      "discharged_month": {
+        "name": "Ontladen (30 dagen)"
+      },
+      "discharged_year": {
+        "name": "Ontladen dit jaar"
+      },
+      "earnings_today": {
+        "name": "Opbrengst vandaag"
+      },
+      "earnings_week": {
+        "name": "Opbrengst (7 dagen)"
+      },
+      "earnings_month": {
+        "name": "Opbrengst (30 dagen)"
+      },
+      "earnings_year": {
+        "name": "Opbrengst dit jaar"
+      },
+      "efficiency_today": {
+        "name": "Rendement vandaag"
+      },
+      "efficiency_week": {
+        "name": "Rendement (7 dagen)"
+      },
+      "efficiency_month": {
+        "name": "Rendement (30 dagen)"
+      },
+      "efficiency_year": {
+        "name": "Rendement dit jaar"
+      },
+      "cycles_today": {
+        "name": "Cycli vandaag"
+      },
+      "cycles_week": {
+        "name": "Cycli (7 dagen)"
+      },
+      "cycles_month": {
+        "name": "Cycli (30 dagen)"
+      },
+      "cycles_year": {
+        "name": "Cycli dit jaar"
+      },
+      "charge_price_today": {
+        "name": "Gemiddelde prijs bij laden vandaag"
+      },
+      "charge_price_week": {
+        "name": "Gemiddelde prijs bij laden (7 dagen)"
+      },
+      "charge_price_month": {
+        "name": "Gemiddelde prijs bij laden (30 dagen)"
+      },
+      "charge_price_year": {
+        "name": "Gemiddelde prijs bij laden dit jaar"
+      },
+      "discharge_price_today": {
+        "name": "Gemiddelde prijs bij ontladen vandaag"
+      },
+      "discharge_price_week": {
+        "name": "Gemiddelde prijs bij ontladen (7 dagen)"
+      },
+      "discharge_price_month": {
+        "name": "Gemiddelde prijs bij ontladen (30 dagen)"
+      },
+      "discharge_price_year": {
+        "name": "Gemiddelde prijs bij ontladen dit jaar"
       }
     },
     "binary_sensor": {
@@ -204,6 +723,18 @@
       },
       "push_pending": {
         "name": "Nieuw plan wacht op push"
+      },
+      "topping_up": {
+        "name": "Bijladen tot vol"
+      },
+      "app_limited": {
+        "name": "Begrensd in de app"
+      },
+      "health_problem": {
+        "name": "Probleem bij de controles"
+      },
+      "update_available": {
+        "name": "Update beschikbaar"
       }
     },
     "calendar": {

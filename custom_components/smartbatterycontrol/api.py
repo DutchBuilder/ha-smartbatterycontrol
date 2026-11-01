@@ -64,3 +64,27 @@ class SbcClient:
     async def reviews(self, battery_id: str, days: int = 31) -> dict:
         """De bewaarde controles van de afgelopen dagen (tot en met gisteren)."""
         return await self._get(f"/plan/{battery_id}/reviews", {"days": str(days)})
+
+    async def stats(self) -> dict:
+        """Alle cijfers van de schermen in één blok: per periode (vandaag, 7 dagen, 30 dagen, dit jaar), per batterij, de
+        zon, het verbruikspatroon en de health-controles. SmartBatteryControl bewaart wat langzaam verandert een tijdje."""
+        return await self._get("/stats")
+
+    async def day_totals(self, day: date) -> dict:
+        """Alle batterijen samen op één dag: gemeten tot nu, daarna gepland, met de gemiddelde prijs per kWh."""
+        return await self._get("/plan/totals", {"day": day.isoformat()})
+
+    async def audit(self, since: float, until: float) -> dict:
+        """De historie van de slots per dag (nieuwste eerst), met wat elk slot kostte of opleverde."""
+        return await self._get("/plan/audit", {"since": f"{since:.0f}", "until": f"{until:.0f}"})
+
+    async def pv(self) -> dict:
+        """Het zonmodel: de voorspellers met hun verwachting, hoe goed ze waren en de zon tegen een gewoon jaar."""
+        return await self._get("/pv")
+
+    async def updates(self) -> dict:
+        return await self._get("/updates")
+
+    async def storage(self) -> dict:
+        """De database, de vrije ruimte en de laatste back-up."""
+        return await self._get("/storage")

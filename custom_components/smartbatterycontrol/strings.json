@@ -181,6 +181,525 @@
       },
       "plug_price_month": {
         "name": "Average price this month"
+      },
+      "end_result_today": {
+        "name": "End result today"
+      },
+      "end_result_tomorrow": {
+        "name": "End result tomorrow"
+      },
+      "last_slot": {
+        "name": "Last slot per kWh"
+      },
+      "result_yesterday": {
+        "name": "Result yesterday"
+      },
+      "phase": {
+        "name": "Phase"
+      },
+      "charge_adjustment": {
+        "name": "Charge adjustment (self-learning)"
+      },
+      "last_push": {
+        "name": "Last push to the battery"
+      },
+      "enforce_power": {
+        "name": "Enforced extra power"
+      },
+      "grid_power_l1": {
+        "name": "Grid power L1"
+      },
+      "grid_power_l2": {
+        "name": "Grid power L2"
+      },
+      "grid_power_l3": {
+        "name": "Grid power L3"
+      },
+      "all_batteries_today": {
+        "name": "All batteries today"
+      },
+      "all_batteries_tomorrow": {
+        "name": "All batteries tomorrow"
+      },
+      "all_batteries_charge_price_today": {
+        "name": "All batteries charging per kWh today"
+      },
+      "all_batteries_charge_price_tomorrow": {
+        "name": "All batteries charging per kWh tomorrow"
+      },
+      "all_batteries_discharge_price_today": {
+        "name": "All batteries discharging per kWh today"
+      },
+      "all_batteries_discharge_price_tomorrow": {
+        "name": "All batteries discharging per kWh tomorrow"
+      },
+      "solar_forecast_today": {
+        "name": "Solar forecast today"
+      },
+      "solar_forecast_tomorrow": {
+        "name": "Solar forecast tomorrow"
+      },
+      "solar_forecast_remaining": {
+        "name": "Solar forecast rest of today"
+      },
+      "solar_typical_year": {
+        "name": "Typical solar year"
+      },
+      "solar_peak_today": {
+        "name": "Solar peak today"
+      },
+      "solar_vs_typical": {
+        "name": "Solar vs typical (30 days)"
+      },
+      "solar_forecast_error": {
+        "name": "Solar forecast error (30 days)"
+      },
+      "best_forecaster": {
+        "name": "Best solar forecaster"
+      },
+      "house_forecast_today": {
+        "name": "Expected consumption today"
+      },
+      "house_forecast_tomorrow": {
+        "name": "Expected consumption tomorrow"
+      },
+      "health_problems": {
+        "name": "Checks with a problem"
+      },
+      "database_size": {
+        "name": "History database"
+      },
+      "storage_free": {
+        "name": "Free storage"
+      },
+      "last_backup": {
+        "name": "Last backup"
+      },
+      "version": {
+        "name": "Version"
+      },
+      "latest_version": {
+        "name": "Latest version"
+      },
+      "forecaster_today": {
+        "name": "Solar forecast {source} today"
+      },
+      "forecaster_tomorrow": {
+        "name": "Solar forecast {source} tomorrow"
+      },
+      "forecaster_score": {
+        "name": "Solar forecast score {source}"
+      },
+      "solar_source_power": {
+        "name": "Power"
+      },
+      "solar_source_total": {
+        "name": "Total produced"
+      },
+      "solar_source_status": {
+        "name": "Status"
+      },
+      "house_today": {
+        "name": "House consumption today"
+      },
+      "house_week": {
+        "name": "House consumption (7 days)"
+      },
+      "house_month": {
+        "name": "House consumption (30 days)"
+      },
+      "house_year": {
+        "name": "House consumption this year"
+      },
+      "grid_import_today": {
+        "name": "Grid import today"
+      },
+      "grid_import_week": {
+        "name": "Grid import (7 days)"
+      },
+      "grid_import_month": {
+        "name": "Grid import (30 days)"
+      },
+      "grid_import_year": {
+        "name": "Grid import this year"
+      },
+      "grid_export_today": {
+        "name": "Grid export today"
+      },
+      "grid_export_week": {
+        "name": "Grid export (7 days)"
+      },
+      "grid_export_month": {
+        "name": "Grid export (30 days)"
+      },
+      "grid_export_year": {
+        "name": "Grid export this year"
+      },
+      "grid_to_house_today": {
+        "name": "Grid to house today"
+      },
+      "grid_to_house_week": {
+        "name": "Grid to house (7 days)"
+      },
+      "grid_to_house_month": {
+        "name": "Grid to house (30 days)"
+      },
+      "grid_to_house_year": {
+        "name": "Grid to house this year"
+      },
+      "batteries_charged_today": {
+        "name": "Batteries charged today"
+      },
+      "batteries_charged_week": {
+        "name": "Batteries charged (7 days)"
+      },
+      "batteries_charged_month": {
+        "name": "Batteries charged (30 days)"
+      },
+      "batteries_charged_year": {
+        "name": "Batteries charged this year"
+      },
+      "batteries_discharged_today": {
+        "name": "Batteries discharged today"
+      },
+      "batteries_discharged_week": {
+        "name": "Batteries discharged (7 days)"
+      },
+      "batteries_discharged_month": {
+        "name": "Batteries discharged (30 days)"
+      },
+      "batteries_discharged_year": {
+        "name": "Batteries discharged this year"
+      },
+      "grid_to_batteries_today": {
+        "name": "Grid to batteries today"
+      },
+      "grid_to_batteries_week": {
+        "name": "Grid to batteries (7 days)"
+      },
+      "grid_to_batteries_month": {
+        "name": "Grid to batteries (30 days)"
+      },
+      "grid_to_batteries_year": {
+        "name": "Grid to batteries this year"
+      },
+      "batteries_to_grid_today": {
+        "name": "Batteries to grid today"
+      },
+      "batteries_to_grid_week": {
+        "name": "Batteries to grid (7 days)"
+      },
+      "batteries_to_grid_month": {
+        "name": "Batteries to grid (30 days)"
+      },
+      "batteries_to_grid_year": {
+        "name": "Batteries to grid this year"
+      },
+      "solar_to_batteries_today": {
+        "name": "Solar to batteries today"
+      },
+      "solar_to_batteries_week": {
+        "name": "Solar to batteries (7 days)"
+      },
+      "solar_to_batteries_month": {
+        "name": "Solar to batteries (30 days)"
+      },
+      "solar_to_batteries_year": {
+        "name": "Solar to batteries this year"
+      },
+      "solar_production_today": {
+        "name": "Solar production today"
+      },
+      "solar_production_week": {
+        "name": "Solar production (7 days)"
+      },
+      "solar_production_month": {
+        "name": "Solar production (30 days)"
+      },
+      "solar_production_year": {
+        "name": "Solar production this year"
+      },
+      "solar_direct_today": {
+        "name": "Solar used directly today"
+      },
+      "solar_direct_week": {
+        "name": "Solar used directly (7 days)"
+      },
+      "solar_direct_month": {
+        "name": "Solar used directly (30 days)"
+      },
+      "solar_direct_year": {
+        "name": "Solar used directly this year"
+      },
+      "solar_exported_today": {
+        "name": "Solar exported today"
+      },
+      "solar_exported_week": {
+        "name": "Solar exported (7 days)"
+      },
+      "solar_exported_month": {
+        "name": "Solar exported (30 days)"
+      },
+      "solar_exported_year": {
+        "name": "Solar exported this year"
+      },
+      "solar_kept_today": {
+        "name": "Solar kept today"
+      },
+      "solar_kept_week": {
+        "name": "Solar kept (7 days)"
+      },
+      "solar_kept_month": {
+        "name": "Solar kept (30 days)"
+      },
+      "solar_kept_year": {
+        "name": "Solar kept this year"
+      },
+      "battery_earnings_today": {
+        "name": "Battery earnings today"
+      },
+      "battery_earnings_week": {
+        "name": "Battery earnings (7 days)"
+      },
+      "battery_earnings_month": {
+        "name": "Battery earnings (30 days)"
+      },
+      "battery_earnings_year": {
+        "name": "Battery earnings this year"
+      },
+      "grid_cost_today": {
+        "name": "Grid cost today"
+      },
+      "grid_cost_week": {
+        "name": "Grid cost (7 days)"
+      },
+      "grid_cost_month": {
+        "name": "Grid cost (30 days)"
+      },
+      "grid_cost_year": {
+        "name": "Grid cost this year"
+      },
+      "electricity_bill_today": {
+        "name": "Electricity bill today"
+      },
+      "electricity_bill_week": {
+        "name": "Electricity bill (7 days)"
+      },
+      "electricity_bill_month": {
+        "name": "Electricity bill (30 days)"
+      },
+      "electricity_bill_year": {
+        "name": "Electricity bill this year"
+      },
+      "solar_value_today": {
+        "name": "Solar value today"
+      },
+      "solar_value_week": {
+        "name": "Solar value (7 days)"
+      },
+      "solar_value_month": {
+        "name": "Solar value (30 days)"
+      },
+      "solar_value_year": {
+        "name": "Solar value this year"
+      },
+      "self_sufficiency_today": {
+        "name": "Self-sufficiency today"
+      },
+      "self_sufficiency_week": {
+        "name": "Self-sufficiency (7 days)"
+      },
+      "self_sufficiency_month": {
+        "name": "Self-sufficiency (30 days)"
+      },
+      "self_sufficiency_year": {
+        "name": "Self-sufficiency this year"
+      },
+      "battery_share_today": {
+        "name": "House from batteries today"
+      },
+      "battery_share_week": {
+        "name": "House from batteries (7 days)"
+      },
+      "battery_share_month": {
+        "name": "House from batteries (30 days)"
+      },
+      "battery_share_year": {
+        "name": "House from batteries this year"
+      },
+      "batteries_efficiency_today": {
+        "name": "Battery efficiency today"
+      },
+      "batteries_efficiency_week": {
+        "name": "Battery efficiency (7 days)"
+      },
+      "batteries_efficiency_month": {
+        "name": "Battery efficiency (30 days)"
+      },
+      "batteries_efficiency_year": {
+        "name": "Battery efficiency this year"
+      },
+      "solar_share_today": {
+        "name": "House directly from solar today"
+      },
+      "solar_share_week": {
+        "name": "House directly from solar (7 days)"
+      },
+      "solar_share_month": {
+        "name": "House directly from solar (30 days)"
+      },
+      "solar_share_year": {
+        "name": "House directly from solar this year"
+      },
+      "solar_self_use_today": {
+        "name": "Solar self-use today"
+      },
+      "solar_self_use_week": {
+        "name": "Solar self-use (7 days)"
+      },
+      "solar_self_use_month": {
+        "name": "Solar self-use (30 days)"
+      },
+      "solar_self_use_year": {
+        "name": "Solar self-use this year"
+      },
+      "grid_charge_price_today": {
+        "name": "Average grid charging price today"
+      },
+      "grid_charge_price_week": {
+        "name": "Average grid charging price (7 days)"
+      },
+      "grid_charge_price_month": {
+        "name": "Average grid charging price (30 days)"
+      },
+      "grid_charge_price_year": {
+        "name": "Average grid charging price this year"
+      },
+      "batteries_discharge_price_today": {
+        "name": "Batteries average price when discharging today"
+      },
+      "batteries_discharge_price_week": {
+        "name": "Batteries average price when discharging (7 days)"
+      },
+      "batteries_discharge_price_month": {
+        "name": "Batteries average price when discharging (30 days)"
+      },
+      "batteries_discharge_price_year": {
+        "name": "Batteries average price when discharging this year"
+      },
+      "price_spread_today": {
+        "name": "Price spread charging and discharging today"
+      },
+      "price_spread_week": {
+        "name": "Price spread charging and discharging (7 days)"
+      },
+      "price_spread_month": {
+        "name": "Price spread charging and discharging (30 days)"
+      },
+      "price_spread_year": {
+        "name": "Price spread charging and discharging this year"
+      },
+      "import_price_today": {
+        "name": "Average import price today"
+      },
+      "import_price_week": {
+        "name": "Average import price (7 days)"
+      },
+      "import_price_month": {
+        "name": "Average import price (30 days)"
+      },
+      "import_price_year": {
+        "name": "Average import price this year"
+      },
+      "export_price_today": {
+        "name": "Average feed-in price today"
+      },
+      "export_price_week": {
+        "name": "Average feed-in price (7 days)"
+      },
+      "export_price_month": {
+        "name": "Average feed-in price (30 days)"
+      },
+      "export_price_year": {
+        "name": "Average feed-in price this year"
+      },
+      "charged_week": {
+        "name": "Charged (7 days)"
+      },
+      "charged_month": {
+        "name": "Charged (30 days)"
+      },
+      "charged_year": {
+        "name": "Charged this year"
+      },
+      "discharged_week": {
+        "name": "Discharged (7 days)"
+      },
+      "discharged_month": {
+        "name": "Discharged (30 days)"
+      },
+      "discharged_year": {
+        "name": "Discharged this year"
+      },
+      "earnings_today": {
+        "name": "Earnings today"
+      },
+      "earnings_week": {
+        "name": "Earnings (7 days)"
+      },
+      "earnings_month": {
+        "name": "Earnings (30 days)"
+      },
+      "earnings_year": {
+        "name": "Earnings this year"
+      },
+      "efficiency_today": {
+        "name": "Efficiency today"
+      },
+      "efficiency_week": {
+        "name": "Efficiency (7 days)"
+      },
+      "efficiency_month": {
+        "name": "Efficiency (30 days)"
+      },
+      "efficiency_year": {
+        "name": "Efficiency this year"
+      },
+      "cycles_today": {
+        "name": "Cycles today"
+      },
+      "cycles_week": {
+        "name": "Cycles (7 days)"
+      },
+      "cycles_month": {
+        "name": "Cycles (30 days)"
+      },
+      "cycles_year": {
+        "name": "Cycles this year"
+      },
+      "charge_price_today": {
+        "name": "Average price when charging today"
+      },
+      "charge_price_week": {
+        "name": "Average price when charging (7 days)"
+      },
+      "charge_price_month": {
+        "name": "Average price when charging (30 days)"
+      },
+      "charge_price_year": {
+        "name": "Average price when charging this year"
+      },
+      "discharge_price_today": {
+        "name": "Average price when discharging today"
+      },
+      "discharge_price_week": {
+        "name": "Average price when discharging (7 days)"
+      },
+      "discharge_price_month": {
+        "name": "Average price when discharging (30 days)"
+      },
+      "discharge_price_year": {
+        "name": "Average price when discharging this year"
       }
     },
     "binary_sensor": {
@@ -204,6 +723,18 @@
       },
       "push_pending": {
         "name": "New plan waiting for push"
+      },
+      "topping_up": {
+        "name": "Topping up to full"
+      },
+      "app_limited": {
+        "name": "Limited in the app"
+      },
+      "health_problem": {
+        "name": "Problem in checks"
+      },
+      "update_available": {
+        "name": "Update available"
       }
     },
     "calendar": {

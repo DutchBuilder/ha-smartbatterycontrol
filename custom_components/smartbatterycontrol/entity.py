@@ -8,7 +8,12 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import dt as dt_util
 
 from .const import DOMAIN, MANUFACTURER
-from .coordinator import SbcConfigEntry, StateCoordinator
+from .coordinator import DetailCoordinator, SbcConfigEntry, StateCoordinator
+
+
+def hub_device(entry: SbcConfigEntry) -> DeviceInfo:
+    return DeviceInfo(identifiers={(DOMAIN, entry.entry_id)}, name="SmartBatteryControl", manufacturer="SmartBatteryControl",
+                      sw_version=entry.runtime_data.version, configuration_url=entry.runtime_data.client.base.removesuffix("/api"))
 
 
 class SbcHubEntity(CoordinatorEntity[StateCoordinator]):
@@ -19,9 +24,21 @@ class SbcHubEntity(CoordinatorEntity[StateCoordinator]):
         self.entry = entry
         self._attr_unique_id = f"{entry.entry_id}_{key}"
         self._attr_translation_key = key
-        self._attr_device_info = DeviceInfo(identifiers={(DOMAIN, entry.entry_id)}, name="SmartBatteryControl",
-                                            manufacturer="SmartBatteryControl", sw_version=entry.runtime_data.version,
-                                            configuration_url=entry.runtime_data.client.base.removesuffix("/api"))
+        self._attr_device_info = hub_device(entry)
+
+
+class SbcHubDetailEntity(CoordinatorEntity[DetailCoordinator]):
+    """Van SmartBatteryControl zelf, uit wat elke 5 minuten binnenkomt (cijfers, dagtotalen, zon, controles …)."""
+
+    _attr_has_entity_name = True
+
+    def __init__(self, entry: SbcConfigEntry, key: str, placeholders: dict[str, str] | None = None) -> None:
+        super().__init__(entry.runtime_data.details)
+        self.entry = entry
+        self._attr_unique_id = f"{entry.entry_id}_{key}"
+        self._attr_device_info = hub_device(entry)
+        if placeholders:
+            self._attr_translation_placeholders = placeholders
 
 
 class SbcBatteryEntity(CoordinatorEntity[StateCoordinator]):
