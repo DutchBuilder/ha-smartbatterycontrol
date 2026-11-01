@@ -70,7 +70,7 @@ En aan/uit-sensoren: bereikbaar, sturen, zelfconsumptie actief (met zelfconsumpt
 schema niet, schema gelijk aan plan (gelijk aan wat er naar de batterij gestuurd is), laadgrens bereikt, nieuw plan wacht op
 push, bijladen tot vol en begrensd in de app (een Marstek die in de app op 800 W staat).
 
-Per stekker (Tapo of HomeWizard) een apparaat met het vermogen, het verbruik en de kosten van vandaag en deze maand, en de
+Per stekker (Tapo, HomeWizard of Tuya) een apparaat met het vermogen, het verbruik en de kosten van vandaag en deze maand, en de
 gemiddelde prijs per kWh deze maand (met de kosten per dag als attribuut).
 
 Per omvormer (of andere zonnebron) een apparaat met het vermogen, het totaal opgewekt (bruikbaar in het Energie-dashboard),

@@ -973,6 +973,10 @@ PLUG_SENSORS: tuple[PlugSensor, ...] = (
 )
 
 
+# Per soort stekker: de maker en het model als SmartBatteryControl er geen weet
+PLUG_MAKERS = {"tapo": ("TP-Link", "Tapo"), "homewizard": ("HomeWizard", "HomeWizard"), "tuya": ("Tuya", "Tuya")}
+
+
 class PlugSensorEntity(SbcEntityId, CoordinatorEntity[StateCoordinator], SensorEntity):
     """Eén waarde van een stekker; elke stekker is een eigen apparaat onder SmartBatteryControl."""
 
@@ -986,10 +990,9 @@ class PlugSensorEntity(SbcEntityId, CoordinatorEntity[StateCoordinator], SensorE
         self.entity_description = description
         self._attr_unique_id = f"plug_{plug['id']}_{description.key}"
         self._attr_translation_key = description.key
-        homewizard = plug.get("kind") == "homewizard"
+        manufacturer, model = PLUG_MAKERS.get(plug.get("kind") or "tapo", PLUG_MAKERS["tapo"])
         self._attr_device_info = DeviceInfo(identifiers={(DOMAIN, f"plug_{plug['id']}")}, name=plug.get("name") or plug["id"],
-                                            manufacturer="HomeWizard" if homewizard else "TP-Link",
-                                            model=plug.get("model") or ("HomeWizard" if homewizard else "Tapo"),
+                                            manufacturer=manufacturer, model=plug.get("model") or model,
                                             via_device=(DOMAIN, entry.entry_id))
 
     async def async_added_to_hass(self) -> None:
