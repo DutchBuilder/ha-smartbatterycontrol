@@ -18,6 +18,10 @@ class SbcAuthError(SbcError):
     """Het API-token ontbreekt of klopt niet."""
 
 
+class SbcForbidden(SbcError):
+    """Het token is goed, maar dit mag het niet (bijv. iets wat alleen vanuit de webinterface kan)."""
+
+
 class SbcClient:
     def __init__(self, session: aiohttp.ClientSession, host: str, port: int = 80, token: str = "", timeout: float = 15):
         self._session = session
@@ -29,8 +33,10 @@ class SbcClient:
         try:
             async with self._session.get(f"{self.base}{path}", params=params, headers=self._headers,
                                          timeout=self._timeout) as response:
-                if response.status in (401, 403):
+                if response.status == 401:
                     raise SbcAuthError("API-token ontbreekt of klopt niet")
+                if response.status == 403:
+                    raise SbcForbidden(f"{path} mag dit API-token niet")
                 if response.status != 200:
                     raise SbcError(f"HTTP {response.status} voor {path}")
                 return await response.json()
@@ -84,7 +90,3 @@ class SbcClient:
 
     async def updates(self) -> dict:
         return await self._get("/updates")
-
-    async def storage(self) -> dict:
-        """De database, de vrije ruimte en de laatste back-up."""
-        return await self._get("/storage")

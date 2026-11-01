@@ -266,15 +266,6 @@
       "health_problems": {
         "name": "Controles met een probleem"
       },
-      "database_size": {
-        "name": "Database historie"
-      },
-      "storage_free": {
-        "name": "Vrije opslag"
-      },
-      "last_backup": {
-        "name": "Laatste back-up"
-      },
       "version": {
         "name": "Versie"
       },

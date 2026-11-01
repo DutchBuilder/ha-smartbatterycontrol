@@ -11,17 +11,18 @@ from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.smartbatterycontrol.api import SbcAuthError, SbcError
+from custom_components.smartbatterycontrol.api import SbcAuthError, SbcError, SbcForbidden
 from custom_components.smartbatterycontrol.const import DOMAIN
 
-from .conftest import PV, STORAGE, UPDATES, audit_payload, battery_state, day_totals, stats_payload
+from .conftest import PV, UPDATES, audit_payload, battery_state, day_totals, stats_payload
 
 NOW = datetime(2026, 10, 29, 14, 7, tzinfo=ZoneInfo("Europe/Amsterdam"))
 TODAY, YESTERDAY = NOW.date().isoformat(), (NOW.date() - timedelta(days=1)).isoformat()
 
 
-def fake_client(state: dict, auth_error: bool = False, old: bool = False):
-    """Een nagebootste SmartBatteryControl; `old`: een oudere zonder /api/stats, dagtotalen, historie, zonmodel …"""
+def fake_client(state: dict, auth_error: bool = False, old: bool = False, forbidden: bool = False):
+    """Een nagebootste SmartBatteryControl; `old`: een oudere zonder /api/stats, dagtotalen, historie, zonmodel …;
+    `forbidden`: het token mag de updates en de historie niet (403)."""
     class Client:
         def __init__(self, session, host, port=80, token=""):
             self.base = f"http://{host}:{port}/api"
@@ -76,6 +77,8 @@ def fake_client(state: dict, auth_error: bool = False, old: bool = False):
         async def audit(self, since, until):
             if old:
                 raise SbcError("HTTP 404 voor /plan/audit")
+            if forbidden:
+                raise SbcForbidden("/plan/audit mag dit API-token niet")
             return audit_payload(TODAY, YESTERDAY)
 
         async def pv(self):
@@ -84,12 +87,9 @@ def fake_client(state: dict, auth_error: bool = False, old: bool = False):
         async def updates(self):
             if old:
                 raise SbcError("HTTP 404 voor /updates")
+            if forbidden:
+                raise SbcForbidden("/updates mag dit API-token niet")
             return UPDATES
-
-        async def storage(self):
-            if old:
-                raise SbcError("HTTP 404 voor /storage")
-            return STORAGE
 
         async def reviews(self, battery_id, days=31):
             # Eerder deze maand, en één van vorige maand (die telt niet mee)
@@ -106,10 +106,11 @@ def state():
     return battery_state(NOW.date().isoformat(), (NOW.date() + timedelta(days=1)).isoformat())
 
 
-async def setup(hass: HomeAssistant, state: dict, token: str = "sbc_goed", old: bool = False) -> MockConfigEntry:
+async def setup(hass: HomeAssistant, state: dict, token: str = "sbc_goed", old: bool = False,
+                forbidden: bool = False) -> MockConfigEntry:
     entry = MockConfigEntry(domain=DOMAIN, data={"host": "192.168.1.50", "port": 80, "token": token}, unique_id="192.168.1.50:80")
     entry.add_to_hass(hass)
-    client = fake_client(state, old=old)
+    client = fake_client(state, old=old, forbidden=forbidden)
     with patch("custom_components.smartbatterycontrol.SbcClient", client), \
             patch("homeassistant.util.dt.now", return_value=NOW):
         assert await hass.config_entries.async_setup(entry.entry_id)
@@ -268,7 +269,7 @@ async def test_battery_extras(hass: HomeAssistant, state) -> None:
 
 
 async def test_solar_and_system(hass: HomeAssistant, state) -> None:
-    """Fasen, de zon (verwachting, per voorspeller, de omvormer), het verwachte verbruik, controles, opslag en updates."""
+    """Fasen, de zon (verwachting, per voorspeller, de omvormer), het verwachte verbruik, de controles en updates."""
     await setup(hass, state)
     hub = "sensor.smartbatterycontrol_"
     assert [hass.states.get(f"{hub}grid_power_l{i}").state for i in (1, 2, 3)] == ["100", "200", "130"]
@@ -291,9 +292,6 @@ async def test_solar_and_system(hass: HomeAssistant, state) -> None:
     assert hass.states.get("binary_sensor.smartbatterycontrol_update_available").state == "on"
     assert hass.states.get(f"{hub}latest_version").state == "0.4.2"
     assert hass.states.get(f"{hub}version").state == "0.4.1"
-    assert value(hass, f"{hub}history_database") == 12.4
-    assert value(hass, f"{hub}free_storage") == 52.3
-    assert hass.states.get(f"{hub}last_backup").state == "2026-10-29T02:30:32+00:00"
     # De omvormer als apparaat, met alle sensoren die SmartBatteryControl uitleest
     assert value(hass, "sensor.omvormer_192_168_1_80_power") == 1092
     total = hass.states.get("sensor.omvormer_192_168_1_80_total_produced")
@@ -308,6 +306,17 @@ async def test_solar_and_system(hass: HomeAssistant, state) -> None:
 
     device = next(d for d in dr.async_get(hass).devices.values() if d.name == "Omvormer (192.168.1.80)")
     assert device.manufacturer == "SolarEdge" and device.model == "SE5K"
+
+
+async def test_forbidden_part_is_not_an_invalid_token(hass: HomeAssistant, state) -> None:
+    """Iets wat het token niet mag (403), zoals iets wat alleen vanuit de webinterface kan: dat onderdeel valt weg, maar
+    Home Assistant vraagt niet om een nieuw token en de rest werkt."""
+    entry = await setup(hass, state, forbidden=True)
+    assert entry.state is config_entries.ConfigEntryState.LOADED
+    assert not any(flow["context"]["source"] == "reauth" for flow in hass.config_entries.flow.async_progress())
+    assert hass.states.get("sensor.smartbatterycontrol_latest_version") is None
+    assert hass.states.get("sensor.venus_thuis_last_slot_per_kwh").state == "unknown"
+    assert value(hass, "sensor.smartbatterycontrol_house_consumption_today") == pytest.approx(11.0)
 
 
 async def test_older_smartbatterycontrol(hass: HomeAssistant, state) -> None:

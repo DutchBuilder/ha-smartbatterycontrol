@@ -150,8 +150,3 @@ PV = {
 }
 UPDATES = {"current": "0.4.1", "kind": "package", "can_install": True, "latest": {"version": "0.4.2", "title": "Nieuwe cijfers"},
            "downloaded": "0.4.2", "settings": {"auto_install": False}}
-STORAGE = {"db_path": "/var/lib/smartbatterycontrol/history.db", "db_size_mb": 12.4,
-           "locations": [{"path": "/var/lib/smartbatterycontrol", "label": "Intern (standaard)", "free_gb": 52.3, "total_gb": 60.4,
-                          "network": False, "current": True}],
-           "backup": {"last_ok": "2026-10-29T03:30:32+01:00", "last_file": "smartbatterycontrol-20261029-0330.zip",
-                      "last_size": 1910775, "last_error": None, "where": "nas"}}

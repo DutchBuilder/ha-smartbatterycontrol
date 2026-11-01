@@ -1,6 +1,6 @@
 """Sensoren per batterij (laadniveau, vermogen, planning, doorrekening, kosten en opbrengst, rendement, de cijfers per
 periode, het laatste slot, en alle sensoren die SmartBatteryControl uit de batterij leest), algemeen (net en fasen, zon,
-prijzen, de cijfers per periode, alle batterijen samen, de zonverwachting, het verwachte verbruik, de controles, opslag en
+prijzen, de cijfers per periode, alle batterijen samen, de zonverwachting, het verwachte verbruik, de controles en
 updates), en per stekker en per omvormer een apparaat."""
 from __future__ import annotations
 
@@ -13,8 +13,8 @@ from typing import Any
 from homeassistant.components.sensor import (SensorDeviceClass, SensorEntity, SensorEntityDescription,
                                              SensorStateClass)
 from homeassistant.const import (PERCENTAGE, SIGNAL_STRENGTH_DECIBELS_MILLIWATT, EntityCategory, UnitOfApparentPower,
-                                 UnitOfElectricCurrent, UnitOfElectricPotential, UnitOfEnergy, UnitOfFrequency,
-                                 UnitOfInformation, UnitOfPower, UnitOfReactivePower, UnitOfTemperature)
+                                 UnitOfElectricCurrent, UnitOfElectricPotential, UnitOfEnergy, UnitOfFrequency, UnitOfPower,
+                                 UnitOfReactivePower, UnitOfTemperature)
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.util import dt as dt_util
@@ -520,7 +520,7 @@ class HubSensorEntity(SbcHubEntity, SensorEntity):
         return attrs(self.coordinator.data or {}) if attrs else None
 
 
-# ── algemeen, elke 5 minuten: cijfers per periode, alle batterijen samen, zon, verbruik, controles ──────
+# ── algemeen, elke 5 minuten: cijfers per periode, alle batterijen samen, zon, verbruik, controles, updates ──
 
 @dataclass(frozen=True, kw_only=True)
 class DetailSensor(SensorEntityDescription):
@@ -656,18 +656,6 @@ def _health_attrs(d: Details) -> dict:
             "problems": [f"{c['category']} · {c['name']}: {c['message']}" for c in _problems(d)]}
 
 
-def _location(d: Details) -> dict:
-    return next((x for x in d.storage.get("locations") or [] if x.get("current")), {})
-
-
-def _backup(d: Details) -> dict:
-    return d.storage.get("backup") or {}
-
-
-def _timestamp_of(value: str | None) -> datetime | None:
-    return datetime.fromisoformat(value) if value else None
-
-
 house_today, house_today_attrs = _house(0)
 house_tomorrow, house_tomorrow_attrs = _house(1)
 
@@ -712,19 +700,6 @@ DETAIL_SENSORS: tuple[DetailSensor, ...] = (
     # De controles (elk kwartier): hoeveel er een waarschuwing of fout geven, met welke
     DetailSensor(key="health_problems", state_class=SensorStateClass.MEASUREMENT, value=lambda d: len(_problems(d)),
                  attrs=_health_attrs, icon="mdi:stethoscope", exists=lambda d: bool(d.stats.get("health"))),
-    # Opslag en back-up
-    DetailSensor(key="database_size", device_class=SensorDeviceClass.DATA_SIZE, native_unit_of_measurement=UnitOfInformation.MEGABYTES,
-                 state_class=SensorStateClass.MEASUREMENT, value=lambda d: d.storage.get("db_size_mb"),
-                 attrs=lambda d: {"path": d.storage.get("db_path")}, exists=lambda d: bool(d.storage),
-                 entity_category=EntityCategory.DIAGNOSTIC),
-    DetailSensor(key="storage_free", device_class=SensorDeviceClass.DATA_SIZE, native_unit_of_measurement=UnitOfInformation.GIGABYTES,
-                 state_class=SensorStateClass.MEASUREMENT, suggested_display_precision=1, value=lambda d: _location(d).get("free_gb"),
-                 attrs=lambda d: {k: _location(d).get(k) for k in ("path", "label", "total_gb", "network")},
-                 exists=lambda d: bool(d.storage), entity_category=EntityCategory.DIAGNOSTIC),
-    DetailSensor(key="last_backup", device_class=SensorDeviceClass.TIMESTAMP, value=lambda d: _timestamp_of(_backup(d).get("last_ok")),
-                 attrs=lambda d: {"file": _backup(d).get("last_file"), "size": _backup(d).get("last_size"),
-                                  "error": _backup(d).get("last_error"), "where": _backup(d).get("where")},
-                 exists=lambda d: bool(_backup(d)), entity_category=EntityCategory.DIAGNOSTIC),
     # Versie en de nieuwste versie (de update zelf installeer je in SmartBatteryControl)
     DetailSensor(key="version", value=lambda d: d.updates.get("current"), exists=lambda d: bool(d.updates),
                  entity_category=EntityCategory.DIAGNOSTIC),
@@ -1073,7 +1048,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: SbcConfigEntry, async_ad
 
     @callback
     def add_detail() -> None:
-        """Cijfers, dagtotalen, zon, verbruik, controles, opslag en updates; per voorspeller van de zon die aan staat."""
+        """Cijfers, dagtotalen, zon, verbruik, controles en updates; per voorspeller van de zon die aan staat."""
         data = details.data
         if data is None:
             return

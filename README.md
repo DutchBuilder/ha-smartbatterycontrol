@@ -91,7 +91,6 @@ weekdag als attribuut), en het controle-interval. Verder:
 | Zonnepiek vandaag, typisch zonnejaar | het hoogste vermogen van vandaag (met het tijdstip), en de kWh van een gewoon jaar |
 | Verwacht verbruik vandaag / morgen | uit het geleerde verbruikspatroon, met de kwartieren als attribuut |
 | Controles met een probleem | hoeveel controles een waarschuwing of fout geven, met welke; ook als aan/uit-sensor |
-| Database historie, vrije opslag, laatste back-up | de opslag van SmartBatteryControl en de laatste back-up |
 | Versie, nieuwste versie | met een aan/uit-sensor Update beschikbaar (installeren doe je in SmartBatteryControl) |
 
 De cijfers per periode: huisverbruik, afname van en teruglevering aan het net, van het net naar het huis, batterijen geladen
@@ -122,8 +121,7 @@ and tomorrow's plans (also as a calendar) with a full calculation, what charging
 round-trip efficiency, and electricity prices. It also has every figure from the SmartBatteryControl screens for today, 7
 days, 30 days and this year (house consumption, grid import and export, battery earnings, self-sufficiency, the
 electricity bill, average prices, solar production and value), the day total of all batteries with the average price per
-kWh, the last slot per battery, the solar forecast per forecaster, the expected consumption, the health checks, storage,
-backups and updates, and each inverter as a device with all its sensors. Today and this year are enabled; 7 and 30 days
+kWh, the last slot per battery, the solar forecast per forecaster, the expected consumption, the health checks and updates, and each inverter as a device with all its sensors. Today and this year are enabled; 7 and 30 days
 are available but disabled. Everything stays on your own network.
 
 Install through HACS as a custom repository, restart Home Assistant, create a read-only API token in SmartBatteryControl

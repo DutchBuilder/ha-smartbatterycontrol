@@ -1,6 +1,6 @@
 """Gegevens ophalen: de toestand elke 15 seconden, de sensoren van de batterijen elke minuut (uit de cache van
 SmartBatteryControl), en elke 5 minuten de doorrekening van de plannen met kosten en opbrengst, de cijfers per periode,
-de dagtotalen van alle batterijen, de historie van de slots, het zonmodel, de controles, de opslag en de updates."""
+de dagtotalen van alle batterijen, de historie van de slots, het zonmodel, de controles en de updates."""
 from __future__ import annotations
 
 import logging
@@ -64,7 +64,6 @@ class Details:
     last_slots: dict[str, dict] = field(default_factory=dict)  # batterij → het laatste laad- of ontlaadslot dat klaar is
     pv: dict = field(default_factory=dict)  # het zonmodel: voorspellers, nauwkeurigheid, tegen een gewoon jaar
     updates: dict = field(default_factory=dict)
-    storage: dict = field(default_factory=dict)
 
 
 def add_money(totals: dict, actual: dict) -> None:
@@ -133,7 +132,6 @@ class DetailCoordinator(DataUpdateCoordinator[Details]):
                         self._pv = (now, pv)
                 details.pv = self._pv[1] if self._pv else {}
             details.updates = await self._optional("updates", self.client.updates()) or {}
-            details.storage = await self._optional("opslag", self.client.storage()) or {}
         except SbcAuthError as exc:
             raise ConfigEntryAuthFailed(str(exc)) from exc
         except SbcError as exc:
@@ -142,7 +140,8 @@ class DetailCoordinator(DataUpdateCoordinator[Details]):
 
     @staticmethod
     async def _optional(what: str, call):
-        """Een onderdeel dat een oudere SmartBatteryControl nog niet heeft, of dat even niet lukt: zonder dat verder."""
+        """Een onderdeel dat een oudere SmartBatteryControl nog niet heeft, dat het token niet mag (403), of dat even niet
+        lukt: zonder dat verder. Alleen een ongeldig token (401) gaat door, dan vraagt Home Assistant om een nieuw."""
         try:
             return await call
         except SbcAuthError:

@@ -266,15 +266,6 @@
       "health_problems": {
         "name": "Checks with a problem"
       },
-      "database_size": {
-        "name": "History database"
-      },
-      "storage_free": {
-        "name": "Free storage"
-      },
-      "last_backup": {
-        "name": "Last backup"
-      },
       "version": {
         "name": "Version"
       },
