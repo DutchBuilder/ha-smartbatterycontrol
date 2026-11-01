@@ -39,6 +39,7 @@ def _title(data: Mapping[str, Any]) -> str:
 
 class SbcConfigFlow(ConfigFlow, domain=DOMAIN):
     VERSION = 1
+    MINOR_VERSION = 2  # 1.2: entity-id's met sbc_ ervoor (async_migrate_entry)
 
     async def _validate(self, data: dict[str, Any]) -> dict[str, str]:
         client = SbcClient(async_get_clientsession(self.hass), data[CONF_HOST], data.get(CONF_PORT, DEFAULT_PORT),

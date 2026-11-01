@@ -32,6 +32,10 @@ Assistant na het bijwerken.
 
 ## Wat je krijgt
 
+Elke entity-id begint met `sbc_`, zodat je ze makkelijk terugvindt: `sensor.sbc_venus_thuis_laadniveau`,
+`sensor.sbc_wasmachine_kosten_deze_maand`. Kwam je van een versie vóór 0.6.0, dan zijn de bestaande entity-id's bij de
+update één keer hernoemd (de geschiedenis gaat mee); pas automatiseringen, scripts en dashboards met de oude namen aan.
+
 Per batterij een apparaat met:
 
 | Sensor | Wat |
@@ -123,6 +127,9 @@ days, 30 days and this year (house consumption, grid import and export, battery 
 electricity bill, average prices, solar production and value), the day total of all batteries with the average price per
 kWh, the last slot per battery, the solar forecast per forecaster, the expected consumption, the health checks and updates, and each inverter as a device with all its sensors. Today and this year are enabled; 7 and 30 days
 are available but disabled. Everything stays on your own network.
+
+Every entity ID starts with `sbc_` (for example `sensor.sbc_venus_home_state_of_charge`); entities from before 0.6.0
+are renamed once on update, so update automations and dashboards that use the old IDs.
 
 Install through HACS as a custom repository, restart Home Assistant, create a read-only API token in SmartBatteryControl
 (Settings → Security → API tokens) and add the integration with the address, port and token. To change the address,

@@ -1,14 +1,54 @@
-"""Basisklassen: één apparaat per batterij en één voor SmartBatteryControl zelf."""
+"""Basisklassen: één apparaat per batterij en één voor SmartBatteryControl zelf, en entity-id's die met sbc_ beginnen."""
 from __future__ import annotations
 
+import asyncio
 from datetime import datetime, time, timedelta
+from typing import TYPE_CHECKING
 
+from homeassistant.core import HomeAssistant, split_entity_id
+from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import dt as dt_util
+from homeassistant.util import slugify
 
-from .const import DOMAIN, MANUFACTURER
+from .const import DOMAIN, MANUFACTURER, PREFIX
 from .coordinator import DetailCoordinator, SbcConfigEntry, StateCoordinator
+
+if TYPE_CHECKING:
+    from homeassistant.helpers.entity_platform import EntityPlatform
+
+
+class SbcEntityId(Entity):
+    """De entity-id van een nieuwe entiteit begint met sbc_, voor wat Home Assistant zelf zou kiezen (het apparaat en de
+    naam): sensor.sbc_venus_thuis_laadniveau. Een entiteit die al bestaat, houdt haar entity-id."""
+
+    def add_to_platform_start(self, hass: HomeAssistant, platform: EntityPlatform,
+                              parallel_updates: asyncio.Semaphore | None) -> None:
+        super().add_to_platform_start(hass, platform, parallel_updates)
+        if self.entity_id is not None or self.unique_id is None or \
+                er.async_get(hass).async_get_entity_id(platform.domain, platform.platform_name, self.unique_id):
+            return
+        name = self.suggested_object_id  # de naam zoals Home Assistant hem voor entity-id's gebruikt
+        info = self.device_info or {}
+        device = dr.async_get(hass).async_get_device(identifiers=info.get("identifiers") or set())
+        device_name = (device.name_by_user or device.name) if device else info.get("name")
+        if full := " ".join(x for x in (device_name, name) if x):
+            self.entity_id = f"{platform.domain}.{PREFIX}{slugify(full)}"
+
+
+def prefix_entity_ids(hass: HomeAssistant, entry: SbcConfigEntry) -> int:
+    """De entiteiten van deze koppeling van vóór het voorvoegsel: sbc_ ervoor (de geschiedenis gaat mee)."""
+    registry = er.async_get(hass)
+    renamed = 0
+    for item in er.async_entries_for_config_entry(registry, entry.entry_id):
+        domain, object_id = split_entity_id(item.entity_id)
+        if not object_id.startswith(PREFIX):
+            registry.async_update_entity(item.entity_id, new_entity_id=registry.async_get_available_entity_id(domain, PREFIX + object_id))
+            renamed += 1
+    return renamed
 
 
 def hub_device(entry: SbcConfigEntry) -> DeviceInfo:
@@ -16,7 +56,7 @@ def hub_device(entry: SbcConfigEntry) -> DeviceInfo:
                       sw_version=entry.runtime_data.version, configuration_url=entry.runtime_data.client.base.removesuffix("/api"))
 
 
-class SbcHubEntity(CoordinatorEntity[StateCoordinator]):
+class SbcHubEntity(SbcEntityId, CoordinatorEntity[StateCoordinator]):
     _attr_has_entity_name = True
 
     def __init__(self, entry: SbcConfigEntry, key: str) -> None:
@@ -27,7 +67,7 @@ class SbcHubEntity(CoordinatorEntity[StateCoordinator]):
         self._attr_device_info = hub_device(entry)
 
 
-class SbcHubDetailEntity(CoordinatorEntity[DetailCoordinator]):
+class SbcHubDetailEntity(SbcEntityId, CoordinatorEntity[DetailCoordinator]):
     """Van SmartBatteryControl zelf, uit wat elke 5 minuten binnenkomt (cijfers, dagtotalen, zon, controles …)."""
 
     _attr_has_entity_name = True
@@ -41,7 +81,7 @@ class SbcHubDetailEntity(CoordinatorEntity[DetailCoordinator]):
             self._attr_translation_placeholders = placeholders
 
 
-class SbcBatteryEntity(CoordinatorEntity[StateCoordinator]):
+class SbcBatteryEntity(SbcEntityId, CoordinatorEntity[StateCoordinator]):
     _attr_has_entity_name = True
 
     def __init__(self, entry: SbcConfigEntry, battery: dict, key: str) -> None:

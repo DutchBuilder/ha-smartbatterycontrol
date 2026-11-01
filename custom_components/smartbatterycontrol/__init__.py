@@ -1,6 +1,8 @@
 """SmartBatteryControl: thuisbatterijen, plannen en prijzen van een lokale SmartBatteryControl in Home Assistant."""
 from __future__ import annotations
 
+import logging
+
 from homeassistant.const import CONF_HOST, CONF_PORT, CONF_TOKEN, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
@@ -10,8 +12,10 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from .api import SbcAuthError, SbcClient, SbcError
 from .const import DEFAULT_PORT, DOMAIN
 from .coordinator import DetailCoordinator, SbcConfigEntry, SbcData, SensorCoordinator, StateCoordinator
+from .entity import prefix_entity_ids
 
 PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR, Platform.CALENDAR]
+_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: SbcConfigEntry) -> bool:
@@ -35,6 +39,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: SbcConfigEntry) -> bool:
                                            name="SmartBatteryControl", manufacturer="SmartBatteryControl", sw_version=version,
                                            configuration_url=client.base.removesuffix("/api"))
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    return True
+
+
+async def async_migrate_entry(hass: HomeAssistant, entry: SbcConfigEntry) -> bool:
+    """1.2: de entity-id's beginnen met sbc_ (bijv. sensor.sbc_venus_thuis_laadniveau). Eén keer, vóór het opstarten:
+    wie daarna een entity-id zelf anders noemt, houdt die."""
+    if entry.version == 1 and entry.minor_version < 2:
+        renamed = prefix_entity_ids(hass, entry)
+        _LOGGER.info("SmartBatteryControl: %s entity-id's beginnen nu met sbc_", renamed)
+        hass.config_entries.async_update_entry(entry, minor_version=2)
     return True
 
 

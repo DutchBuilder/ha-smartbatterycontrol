@@ -24,7 +24,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
 from .coordinator import Details, SbcConfigEntry, SensorCoordinator, StateCoordinator, per_kwh
-from .entity import SbcBatteryEntity, SbcHubDetailEntity, SbcHubEntity, next_block, schedule_text, slot_text, soc_for
+from .entity import SbcBatteryEntity, SbcEntityId, SbcHubDetailEntity, SbcHubEntity, next_block, schedule_text, slot_text, soc_for
 
 EUR, EUR_KWH = "EUR", "EUR/kWh"
 
@@ -852,7 +852,7 @@ class DeviceValueSensor(SensorEntity):
         return str(v)[:255]
 
 
-class BatteryDetailSensor(DeviceValueSensor, CoordinatorEntity[SensorCoordinator]):
+class BatteryDetailSensor(SbcEntityId, DeviceValueSensor, CoordinatorEntity[SensorCoordinator]):
     """Eén sensor uit de batterij, zoals SmartBatteryControl hem uitleest."""
 
     def __init__(self, entry: SbcConfigEntry, battery: dict, sensor: dict) -> None:
@@ -860,7 +860,7 @@ class BatteryDetailSensor(DeviceValueSensor, CoordinatorEntity[SensorCoordinator
         self.battery_id = battery["id"]
         self.key = detail_key(sensor)
         self._attr_unique_id = f"{battery['id']}_detail_{self.key}"
-        self._attr_device_info = DeviceInfo(identifiers={(DOMAIN, battery["id"])})
+        self._attr_device_info = DeviceInfo(identifiers={(DOMAIN, battery["id"])}, name=battery["name"])
         self._describe(sensor, battery=True)
 
     def _sensor(self) -> dict | None:
@@ -891,7 +891,7 @@ def solar_device(entry: SbcConfigEntry, source: dict) -> DeviceInfo:
                       via_device=(DOMAIN, entry.entry_id))
 
 
-class SolarEntity(CoordinatorEntity[StateCoordinator]):
+class SolarEntity(SbcEntityId, CoordinatorEntity[StateCoordinator]):
     _attr_has_entity_name = True
 
     def __init__(self, entry: SbcConfigEntry, source: dict, key: str) -> None:
@@ -973,7 +973,7 @@ PLUG_SENSORS: tuple[PlugSensor, ...] = (
 )
 
 
-class PlugSensorEntity(CoordinatorEntity[StateCoordinator], SensorEntity):
+class PlugSensorEntity(SbcEntityId, CoordinatorEntity[StateCoordinator], SensorEntity):
     """Eén waarde van een stekker; elke stekker is een eigen apparaat onder SmartBatteryControl."""
 
     _attr_has_entity_name = True
